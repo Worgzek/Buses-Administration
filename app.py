@@ -1,22 +1,12 @@
-from flask import Flask, jsonify
-from db import get_summary_data
+from flask import Flask, render_template, request, redirect, url_for
+from db import fetch_all_trips
 
 app = Flask(__name__)
 
-@app.route('/api/chuyen-xe', methods=['GET'])
-def api_chuyen_xe():
-    try:
-        data = get_summary_data()
-        return jsonify({
-            "status": "success",
-            "total": len(data),
-            "data": data
-        }), 200
-    except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+@app.route('/')
+def index():
+    data = fetch_all_trips()
+    return render_template('index.html', chuyen_xe=data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)

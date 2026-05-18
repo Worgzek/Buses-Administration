@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản Lý Bến Xe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>🚌 Danh Sách Chuyến Xe</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Mã Chuyến</th>
+                <th>Tuyến Đường</th>
+                <th>Tài Xế</th>
+                <th>Biển Số</th>
+                <th>Ngày Khởi Hành</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in chuyen_xe %}
+            <tr>
+                <td>{{ item.machuyen }}</td>
+                <td>{{ item.tentuyen }}</td>
+                <td>{{ item.tentaixe }}</td>
+                <td>{{ item.bienso }}</td>
+                <td>{{ item.ngaykhoihanh }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
