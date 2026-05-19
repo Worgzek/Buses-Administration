@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from db import fetch_all_trips
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='client/templates', static_folder='client/static')
 
 @app.route('/')
 def index():

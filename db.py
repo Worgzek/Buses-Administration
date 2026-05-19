@@ -16,7 +16,7 @@ def get_db_connection():
     )
     return conn
 
-def lay_tat_ca_ve():
+def fetch_all_trips():
     conn = get_db_connection()   
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute('SELECT * FROM VE;')
