@@ -1,2 +1,11 @@
-.env/
+
+# Virtual environments
+env/
+venv/
+.venv/
+
+
+.env
+
+
 sql/

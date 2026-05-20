@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# --- PHẦN KẾT NỐI ---
 def get_db_connection():
     return psycopg2.connect(
         host=os.getenv('DB_HOST'),
