@@ -1,18 +1,13 @@
-// benxe.js - Quản lý tương tác UI cho Bus Admin
-// Được thiết kế bởi Quốc Jack
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Hệ thống Bus Admin của Quốc Jack đã sẵn sàng!");
     loadStations();
 
-    // Tìm nút Lưu dựa trên class btn-custom
     const saveBtn = document.querySelector('.btn-custom');
     if (saveBtn) {
         saveBtn.addEventListener('click', handleAddStation);
     }
 });
 
-// 1. Hàm lấy danh sách bến xe từ Flask API
 function loadStations() {
     const tableBody = document.getElementById('table-body');
     if (!tableBody) return;
@@ -31,13 +26,11 @@ function loadStations() {
         });
 }
 
-// 2. Hàm render dữ liệu vào bảng
 function renderTable(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = ''; 
 
     data.forEach(station => {
-        // Xác định chính xác mã bến xe trước khi đưa vào HTML
         const ma = station.mabenxe || station[0];
         const ten = station.tenbenxe || station[1];
         const dc = station.diachi || station[2];
@@ -61,9 +54,8 @@ function renderTable(data) {
     });
 }
 
-// 3. Hàm thêm bến xe
+
 function handleAddStation() {
-    // Lấy form qua ID (Nhớ thêm id="main-form" vào thẻ <form> trong HTML)
     const inputs = document.querySelectorAll('.table-container input');
     const ma = inputs[0].value.trim();
     const ten = inputs[1].value.trim();
@@ -84,8 +76,8 @@ function handleAddStation() {
     .then(response => {
         if (response.ok) {
             alert('Thêm bến xe thành công vào Postgres!');
-            inputs.forEach(input => input.value = ''); // Xóa trắng input
-            loadStations(); // Cập nhật lại bảng ngay lập tức
+            inputs.forEach(input => input.value = '');
+            loadStations();
         } else {
             return response.json().then(err => { throw new Error(err.error); });
         }
@@ -108,9 +100,7 @@ function deleteStation(id) {
     }
 }
 
-// 1. Khi bấm nút Sửa: Lấy dữ liệu cũ đổ vào Modal và hiện Popup
 function editStation(ma) {
-    // Tìm dòng chứa dữ liệu trong bảng để lấy Tên và Địa chỉ cũ
     const tableBody = document.getElementById('table-body');
     const rows = tableBody.getElementsByTagName('tr');
     
@@ -133,7 +123,6 @@ function editStation(ma) {
     }
 }
 
-// 2. Khi bấm nút "Lưu thay đổi" trong Modal
 function submitEdit() {
     const ma = document.getElementById('edit-ma').value;
     const ten = document.getElementById('edit-ten').value.trim();
@@ -154,7 +143,7 @@ function submitEdit() {
     .then(res => {
         if (res.ok) {
             alert('Cập nhật thành công!');
-            location.reload(); // Hoặc gọi loadStations() và ẩn modal
+            location.reload();
         } else {
             alert('Lỗi cập nhật!');
         }

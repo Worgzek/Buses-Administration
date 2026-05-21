@@ -6,7 +6,7 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-# ----STATIONS
+# ----ben xe
 
 @app.route('/api/stations', methods=['GET'])
 def list_stations():
@@ -46,6 +46,17 @@ def delete_station_route(id):
             return jsonify({"error": "Không thể xóa! Bến xe này đang có dữ liệu liên quan."}), 400
         return jsonify({"error": error_msg}), 500
 
+# ----tuyen xe
+@app.route('/api/tuyenxe', methods=['GET'])
+def list_tuyen():
+    data = db.get_all_tuyen()
+    return jsonify(data)
+
+@app.route('/api/tuyenxe', methods=['POST'])
+def add_tuyen():
+    req = request.json
+    db.add_tuyen(req['ma'], req['ten'], req['dau'], req['cuoi'], req['gia'], req['maben'])
+    return jsonify({"status":"success","message":"Đã thêm tuyến xe mới!"}),201
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)

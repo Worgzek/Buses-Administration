@@ -14,9 +14,12 @@ def get_db_connection():
         port=os.getenv('DB_PORT')
     )
 
-#---STATIONS
+#---Ben xe
 def get_all_stations():
-    query = "SELECT * FROM ben_xe"
+    query = '''
+                SELECT * FROM ben_xe
+                ORDER BY mabenxe ASC
+            '''
     conn = get_db_connection()
     try:
         with conn.cursor(cursor_factory=RealDictCursor) as cur:
@@ -26,7 +29,8 @@ def get_all_stations():
         conn.close()
 
 def add_station(ma, ten, diachi):
-    query = '''INSERT INTO ben_xe (mabenxe, tenbenxe, diachi) 
+    query = '''
+                INSERT INTO ben_xe (mabenxe, tenbenxe, diachi) 
                 VALUES 
                 (%s, %s, %s)
             '''
@@ -39,7 +43,8 @@ def add_station(ma, ten, diachi):
         conn.close()
 
 def delete_station(ma):
-    query = '''Delete 
+    query = '''
+                Delete 
                 from ben_xe 
                 where 
                 mabenxe = %s
@@ -53,7 +58,8 @@ def delete_station(ma):
         conn.close()
 
 def edit_stations(ten, diachi, ma):
-    query = '''update ben_xe
+    query = '''
+                update ben_xe
                 set tenbenxe = %s, diachi = %s
                 where mabenxe = %s
             '''
@@ -65,3 +71,34 @@ def edit_stations(ten, diachi, ma):
     finally:
         conn.close()
 
+#---Tuyen xe
+def get_all_tuyen():
+    query = '''
+                select
+                tuy.*
+                ,ben.tenbenxe
+                from tuyen_xe tuy
+                left join ben_xe ben on tuy.mabenxe = ben.mabenxe   
+                order by tuy.matuyenxe ASC           
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+def add_tuyen(ma, ten, dau, cuoi, gia, maben):
+    query = '''
+                insert into tuyen_xe(matuyen, tentuyen, diemdau, diemcuoi, giave, mabenxe)
+                values
+                (%s,%s,%s,%s,%s,%s);
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma, ten, dau, cuoi, gia, maben))
+            conn.commit()
+    finally:
+        conn.close()
