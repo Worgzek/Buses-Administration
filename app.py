@@ -55,7 +55,7 @@ def list_tuyen():
 @app.route('/api/tuyenxe', methods=['POST'])
 def add_tuyen():
     req = request.json
-    db.add_tuyen(req['ma'], req['ten'], req['dau'], req['cuoi'], req['gia'], req['maben'])
+    db.add_tuyen(req['ma'], req['ten'], req['dau'], req['cuoi'], req['gia'])
     return jsonify({"status":"success","message":"Đã thêm tuyến xe mới!"}),201
 
 @app.route('/api/tuyenxe/<ma>', methods=['DELETE'])
@@ -78,14 +78,12 @@ def get_one_tuyen(ma):
 def edit_tuyen(ma):
     req = request.json
     try:
-
         db.edit_tuyen(
             ma, 
             req['ten'], 
             req['dau'], 
             req['cuoi'], 
             req['gia'], 
-            req['maben']
         )
         return jsonify({
             "status": "success", 

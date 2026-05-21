@@ -1,11 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("Hệ thống Bus Admin của Quốc Jack đã sẵn sàng!");
     loadStations();
-
-    const saveBtn = document.querySelector('.btn-custom');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', handleAddStation);
-    }
 });
 
 function loadStations() {
@@ -55,45 +49,49 @@ function renderTable(data) {
 }
 
 
-function handleAddStation() {
-    const inputs = document.querySelectorAll('.table-container input');
-    const ma = inputs[0].value.trim();
-    const ten = inputs[1].value.trim();
-    const diachi = inputs[2].value.trim();
+async function handleAddStation() {
+    const ma = document.getElementById('bx-ma').value.trim();
+    const ten = document.getElementById('bx-ten').value.trim();
+    const diachi = document.getElementById('bx-diachi').value.trim();
 
     if (!ma || !ten) {
-        alert('Quốc Jack ơi, nhập thiếu Mã hoặc Tên kìa!');
+        alert('Vui lòng nhập đầy đủ Mã và Tên bến xe!');
         return;
     }
 
-    const payload = { ma, ten, diachi };
+    try {
+        const response = await fetch('/api/stations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ma, ten, diachi })
+        });
 
-    fetch('/api/stations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(response => {
+        // TRƯỜNG HỢP 1: THÀNH CÔNG (200, 201)
         if (response.ok) {
-            alert('Thêm bến xe thành công vào Postgres!');
-            inputs.forEach(input => input.value = '');
+            alert('Thêm bến xe thành công!');
+            document.getElementById('bx-ma').value = '';
+            document.getElementById('bx-ten').value = '';
+            document.getElementById('bx-diachi').value = '';
             loadStations();
+            return;
         } else {
-            return response.json().then(err => { throw new Error(err.error); });
+            alert('Đã có lỗi xảy ra');
         }
-    })
-    .catch(error => alert('Lỗi: ' + error.message));
+    } catch (error) {
+        console.error('Lỗi kết nối:', error);
+        alert('Không thể kết nối đến máy chủ!');
+    }
 }
 
 function deleteStation(id) {
-    if (confirm(`Quốc Jack chắc chắn muốn xóa bến ${id} không?`)) {
+    if (confirm(`Bạn chắc chắn muốn xóa bến ${id} không?`)) {
         fetch(`/api/stations/${id}`, { method: 'DELETE' })
         .then(res => {
             if (res.ok) {
-                alert('Xóa xong!');
+                alert('Xóa thành công!');
                 loadStations();
             } else {
-                alert('Không xóa được! Có thể bến này đang có Chuyến xe chạy.');
+                alert('Không thể xóa! Có thể bến này đang có Chuyến xe chạy.');
             }
         });
     }
@@ -143,7 +141,7 @@ function submitEdit() {
             alert('Cập nhật thành công!');
             location.reload();
         } else {
-            alert('Lỗi cập nhật!');
+            alert('Đã có lỗi xảy ra');
         }
     })
     .catch(err => console.error('Lỗi:', err));

@@ -74,13 +74,16 @@ def edit_stations(ten, diachi, ma):
 #---Tuyen xe
 def get_all_tuyen():
     query = '''
-                select
-                tuy.*
-                ,ben.tenbenxe
-                from tuyen_xe tuy
-                left join ben_xe ben on tuy.mabenxe = ben.mabenxe   
-                order by tuy.matuyen ASC           
-            '''
+        SELECT 
+            t.matuyen, t.tentuyen, 
+            b1.tenbenxe AS ten_dau, 
+            b2.tenbenxe AS ten_cuoi, 
+            t.giave
+        FROM tuyen_xe t
+        LEFT JOIN ben_xe b1 ON t.maBXdau = b1.mabenxe
+        LEFT JOIN ben_xe b2 ON t.maBXcuoi = b2.mabenxe
+        ORDER BY t.matuyen ASC
+    '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -89,16 +92,16 @@ def get_all_tuyen():
     finally:
         conn.close()
 
-def add_tuyen(ma, ten, dau, cuoi, gia, maben):
+def add_tuyen(ma, ten, dau, cuoi, gia):
     query = '''
-                insert into tuyen_xe(matuyen, tentuyen, diemdau, diemcuoi, giave, mabenxe)
+                insert into tuyen_xe(matuyen, tentuyen, maBXdau, maBXcuoi, giave)
                 values
-                (%s,%s,%s,%s,%s,%s);
+                (%s,%s,%s,%s,%s);
             '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute(query,(ma, ten, dau, cuoi, gia, maben))
+            cur.execute(query,(ma, ten, dau, cuoi, gia))
             conn.commit()
     finally:
         conn.close()
@@ -119,10 +122,14 @@ def delete_tuyen(ma):
 
 def get_tuyen_by_id(ma):
     query = '''
-        SELECT tuy.*, ben.tenbenxe 
-        FROM tuyen_xe tuy
-        LEFT JOIN ben_xe ben ON tuy.mabenxe = ben.mabenxe
-        WHERE tuy.matuyen = %s
+        SELECT 
+            t.matuyen, t.tentuyen, t.maBXdau, t.maBXcuoi, t.giave,
+            b1.tenbenxe AS ten_dau, 
+            b2.tenbenxe AS ten_cuoi
+        FROM tuyen_xe t
+        LEFT JOIN ben_xe b1 ON t.maBXdau = b1.mabenxe
+        LEFT JOIN ben_xe b2 ON t.maBXcuoi = b2.mabenxe 
+        WHERE t.matuyen = %s
     '''
     conn = get_db_connection()
     try:
@@ -132,20 +139,19 @@ def get_tuyen_by_id(ma):
     finally:
         conn.close()
 
-def edit_tuyen(ma, ten, dau, cuoi, gia, maben):
+def edit_tuyen(ma, ten, dau, cuoi, gia):
     query = '''
         UPDATE tuyen_xe 
         SET tentuyen = %s, 
-            diemdau = %s, 
-            diemcuoi = %s, 
-            giave = %s, 
-            mabenxe = %s
+            maBXdau = %s, 
+            maBXcuoi = %s, 
+            giave = %s
         WHERE matuyen = %s
     '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute(query, (ten, dau, cuoi, gia, maben, ma))
+            cur.execute(query, (ten, dau, cuoi, gia, ma))
             conn.commit()
     except Exception as e:
         print(f"Lỗi SQL Update: {e}")

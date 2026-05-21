@@ -1,19 +1,33 @@
-function showSection(name) {
-    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
-    
-    const targetSection = document.getElementById('section-' + name);
-    const targetMenu = document.getElementById('menu-' + name);
-    
-    if (targetSection) targetSection.classList.add('active');
-    if (targetMenu) targetMenu.classList.add('active');
+function showSection(sectionId) {
+    const benXeSec = document.getElementById('section-benxe');
+    const tuyenXeSec = document.getElementById('section-tuyenxe');
 
-    // QUAN TRỌNG: Gọi hàm load dữ liệu tương ứng
-    if (name === 'tuyenxe') {
-        console.log("Đang chuyển sang tab Tuyến xe..."); 
-        loadTuyenXe();
-        loadStationsForSelect();
-    } else if (name === 'benxe') {
-        loadStations(); 
+    // Reset hiển thị
+    if (sectionId === 'benxe') {
+        benXeSec.style.display = 'block';
+        tuyenXeSec.style.display = 'none';
+        document.getElementById('main-title').innerText = "Quản lý Bến xe";
+        
+        // Gọi hàm từ benxe.js
+        if (typeof loadStations === 'function') loadStations(); 
+    } 
+    else if (sectionId === 'tuyenxe') {
+        benXeSec.style.display = 'none';
+        tuyenXeSec.style.display = 'block';
+        document.getElementById('main-title').innerText = "Quản lý Tuyến xe";
+
+        // Load cả bảng và dropbox ngay khi chuyển sang tab Tuyến xe
+        if (typeof loadTuyenXe === 'function') loadTuyenXe();
+        if (typeof loadAllStationSelects === 'function') loadAllStationSelects();
     }
+
+    // Cập nhật menu active
+    document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
+    const activeMenu = document.getElementById('menu-' + sectionId);
+    if (activeMenu) activeMenu.classList.add('active');
 }
+
+// Khởi tạo ngay khi vừa load trang
+document.addEventListener('DOMContentLoaded', () => {
+    showSection('benxe');
+});

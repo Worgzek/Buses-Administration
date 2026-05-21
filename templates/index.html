@@ -27,18 +27,11 @@
             <li onclick="alert('Tính năng đang phát triển!')">
                 <i class="fas fa-users me-2"></i> Nhân viên
             </li>
-            <li onclick="alert('Tính năng đang phát triển!')">
-                <i class="fas fa-ticket-alt me-2"></i> Quản lý Vé
-            </li>
-            <li onclick="alert('Tính năng đang phát triển!')">
-                <i class="fas fa-file-invoice-dollar me-2"></i> Thống kê
-            </li>
         </ul>
     </nav>
 
     <div id="content">
         <div class="container-fluid">
-            
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold" id="main-title">Quản lý Bến xe</h2>
                 <div class="user-profile">
@@ -47,9 +40,9 @@
                 </div>
             </div>
 
-            <div id="section-benxe" class="content-section active">
+            <div id="section-benxe" class="content-section">
                 <div class="table-container mb-4 shadow-sm p-4 bg-white rounded">
-                    <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-plus-circle me-2"></i>Thêm Mới Bến Xe</h5>
+                    <h5 class="card-title mb-4"><i class="fas fa-plus-circle me-2"></i>Thêm Bến Xe Mới</h5>
                     <form class="row g-3" id="form-benxe">
                         <div class="col-md-3">
                             <label class="form-label small fw-bold">Mã bến</label>
@@ -64,7 +57,7 @@
                             <input type="text" class="form-control" id="bx-diachi" placeholder="Quận/Huyện, Tỉnh">
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-custom w-100" onclick="handleAddStation()">Lưu</button>
+                            <button type="button" class="btn btn-custom btn-primary w-100" onclick="handleAddStation()">Lưu</button>
                         </div>
                     </form>
                 </div>
@@ -81,155 +74,109 @@
                                     <th class="text-center">Hành động</th>
                                 </tr>
                             </thead>
-                            <tbody id="table-body">
-                                </tbody>
+                            <tbody id="table-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div id="section-tuyenxe" class="content-section">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="table-container shadow-sm p-4 bg-white rounded">
-                            <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-route me-2"></i>Thiết lập Tuyến</h5>
-                            <form class="row g-3">
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold">Mã tuyến</label>
-                                    <input type="text" id="tx-ma" class="form-control" placeholder="T01">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label small fw-bold">Điểm đầu</label>
-                                    <input type="text" id="tx-dau" class="form-control" placeholder="Sài Gòn">
-                                </div>
-                                <div class="col-6">
-                                    <label class="form-label small fw-bold">Điểm cuối</label>
-                                    <input type="text" id="tx-cuoi" class="form-control" placeholder="Đà Lạt">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold">Giá vé (VNĐ)</label>
-                                    <input type="number" id="tx-gia" class="form-control" placeholder="300000">
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label small fw-bold">Bến xe quản lý</label>
-                                    <select id="tx-mabenxe" class="form-select">
-                                        <option value="">-- Chọn bến xe --</option>
-                                    </select>
-                                </div>
-                                <div class="col-12 mt-4">
-                                    <button type="button" class="btn btn-custom w-100" onclick="handleAddTuyen()">Lưu Tuyến Xe</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="table-container shadow-sm p-4 bg-white rounded">
-                            <h5 class="fw-bold mb-3">Danh Sách Tuyến Đường</h5>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Mã</th>
-                                            <th>Lộ Trình</th>
-                                            <th>Giá Vé</th>
-                                            <th>Bến Quản Lý</th>
-                                            <th class="text-center">Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="table-body-tuyen">
-                                        </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-success text-white"> <h5 class="modal-title" id="editModalLabel">
-                        <i class="fas fa-map-marker-alt me-2"></i>Chỉnh sửa Bến xe: <span id="display-ma-bx" class="fw-bold"></span>
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="edit-form">
-                        <input type="hidden" id="edit-ma"> 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Tên bến xe mới</label>
-                            <input type="text" class="form-control bg-light" id="edit-ten" placeholder="Nhập tên bến xe...">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-bold small text-uppercase">Địa chỉ mới</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-white"><i class="fas fa-location-dot text-success"></i></span>
-                                <input type="text" class="form-control bg-light" id="edit-diachi" placeholder="Nhập địa chỉ cụ thể...">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-success px-4 shadow-sm text-white" onclick="submitEdit()">
-                        <i class="fas fa-save me-2"></i>Lưu thay đổi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="editTuyenModal" tabindex="-1" aria-labelledby="editTuyenModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-primary text-white"> <h5 class="modal-title" id="editTuyenModalLabel">
-                        <i class="fas fa-route me-2"></i>Chỉnh sửa tuyến: <span id="display-ma-tx" class="fw-bold"></span>
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="edit-tuyen-form">
-                        <input type="hidden" id="edit-tx-ma">
+            <div id="section-tuyenxe" class="content-section" style="display: none;">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4"><i class="fas fa-plus-circle me-2"></i>Thêm Tuyến Xe Mới</h5>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">Điểm đầu</label>
-                                <input type="text" class="form-control bg-light" id="edit-tx-dau" placeholder="Ví dụ: Sài Gòn">
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Mã Tuyến</label>
+                                <input type="text" id="tx-ma" class="form-control" placeholder="01">
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold small text-uppercase">Điểm cuối</label>
-                                <input type="text" class="form-control bg-light" id="edit-tx-cuoi" placeholder="Ví dụ: Đà Lạt">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Điểm đầu</label>
+                                <select id="tx-dau" class="form-select">
+                                    <option value="">-- Chọn bến đi --</option>
+                                </select>
                             </div>
-                            <div class="col-md-12">
-                                <label class="form-label fw-bold small text-uppercase">Giá vé (VNĐ)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white text-danger fw-bold">₫</span>
-                                    <input type="number" class="form-control bg-light" id="edit-tx-gia">
-                                </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold">Điểm cuối</label>
+                                <select id="tx-cuoi" class="form-select">
+                                    <option value="">-- Chọn bến đến --</option>
+                                </select>
                             </div>
-                            <div class="col-md-12">
-                                <label class="form-label fw-bold small text-uppercase">Bến xe quản lý</label>
-                                <select id="edit-tx-mabenxe" class="form-select bg-light shadow-sm"></select>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Giá vé</label>
+                                <input type="number" id="tx-gia" class="form-control" placeholder="7000">
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" onclick="handleAddTuyen()">Thêm</button>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-                <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary px-4 shadow-sm" onclick="submitEditTuyen()">
-                        <i class="fas fa-save me-2"></i>Lưu thay đổi
-                    </button>
+
+                <div class="table-container shadow-sm p-4 bg-white rounded">
+                    <h5 class="fw-bold mb-3">Danh Sách Tuyến Đường</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã Tuyến</th>
+                                    <th>Lộ Trình</th>
+                                    <th>Giá Vé</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-tuyen"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">Sửa Bến xe: <span id="display-ma-bx"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-ma">
+                        <div class="mb-3"><label class="form-label">Tên bến xe mới</label><input type="text" class="form-control" id="edit-ten"></div>
+                        <div class="mb-3"><label class="form-label">Địa chỉ mới</label><input type="text" class="form-control" id="edit-diachi"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-success text-white" onclick="submitEdit()">Lưu</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div class="modal fade" id="editTuyenModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Sửa Tuyến: <span id="display-ma-tx"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-tx-ma">
+                        <div class="mb-3"><label class="form-label">Bến đi</label><select id="edit-tx-dau" class="form-select"></select></div>
+                        <div class="mb-3"><label class="form-label">Bến đến</label><select id="edit-tx-cuoi" class="form-select"></select></div>
+                        <div class="mb-3"><label class="form-label">Giá vé</label><input type="number" id="edit-tx-gia" class="form-control"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" onclick="submitEditTuyen()">Lưu</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/benxe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tuyenxe.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
