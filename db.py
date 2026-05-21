@@ -14,10 +14,8 @@ def get_db_connection():
         port=os.getenv('DB_PORT')
     )
 
-# --- PHẦN TRUY VẤN (Các hàm nghiệp vụ) ---
-
+#---STATIONS
 def get_all_stations():
-    """Truy vấn lấy danh sách bến xe"""
     query = "SELECT * FROM ben_xe"
     conn = get_db_connection()
     try:
@@ -28,8 +26,10 @@ def get_all_stations():
         conn.close()
 
 def add_station(ma, ten, diachi):
-    """Truy vấn thêm bến xe mới"""
-    query = "INSERT INTO ben_xe (mabenxe, tenbenxe, diachi) VALUES (%s, %s, %s)"
+    query = '''INSERT INTO ben_xe (mabenxe, tenbenxe, diachi) 
+                VALUES 
+                (%s, %s, %s)
+            '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -38,8 +38,34 @@ def add_station(ma, ten, diachi):
     finally:
         conn.close()
 
+def delete_station(ma):
+    query = '''Delete 
+                from ben_xe 
+                where 
+                mabenxe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma,))
+            conn.commit()
+    finally:
+        conn.close()
+
+def edit_stations(ten, diachi, ma):
+    query = '''update ben_xe
+                set tenbenxe = %s, diachi = %s
+                where mabenxe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ten, diachi, ma))
+            conn.commit()
+    finally:
+        conn.close()
+
 def get_revenue_report():
-    """Truy vấn JOIN 3 bảng thống kê doanh thu"""
     query = """
         SELECT b.TenBenXe, SUM(v.GiaVe) AS TongDoanhThu
         FROM BEN_XE b 

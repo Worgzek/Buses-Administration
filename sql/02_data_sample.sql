@@ -83,3 +83,54 @@ INSERT INTO XE_BUS (MaXe, BienSo, SoCho, TrangThai, MaTuyen) VALUES
 ('X13', '75B-111.22', 34, 'Đang hoạt động', 'T13'),
 ('X14', '68A-333.44', 16, 'Đang hoạt động', 'T14'),
 ('X15', '69B-555.66', 45, 'Đang hoạt động', 'T15');
+
+INSERT INTO nhan_vien (manhanvien, tennhanvien, loainhanvien, sodienthoai) VALUES 
+('NV01', 'Nguyen Van Hung', 'Tai xe', '0901234561'),
+('NV02', 'Tran Thi Lan', 'Ban ve', '0901234562'),
+('NV03', 'Le Van Cuong', 'Tai xe', '0901234563'),
+('NV04', 'Pham Minh Hoang', 'Tai xe', '0901234564'),
+('NV05', 'Hoang Thanh Thuy', 'Ban ve', '0901234565'),
+('NV06', 'Dang Van Lam', 'Tai xe', '0901234566'),
+('NV07', 'Bui Tuyet Mai', 'Ban ve', '0901234567'),
+('NV08', 'Ngo Quang Hai', 'Tai xe', '0901234568'),
+('NV09', 'Ly Thanh Nam', 'Tai xe', '0901234569'),
+('NV10', 'Vu Duc Chinh', 'Bao ve', '0901234570'),
+('NV11', 'Do Kim Lien', 'Ban ve', '0901234571'),
+('NV12', 'Trinh Van Toan', 'Tai xe', '0901234572'),
+('NV13', 'Phan Anh Tuan', 'Tai xe', '0901234573'),
+('NV14', 'Mai Phuong Thao', 'Ban ve', '0901234574'),
+('NV15', 'Nguyen Quoc Jack', 'Dieu hanh', '0901234575');
+
+INSERT INTO chuyen_xe (machuyen, maben_di, maben_den, mataixe, gio_khoi_hanh) VALUES 
+('C01', 'BX01', 'BX02', 'NV01', '2026-05-22 08:00:00'),
+('C02', 'BX01', 'BX03', 'NV03', '2026-05-22 09:30:00'),
+('C03', 'BX02', 'BX01', 'NV04', '2026-05-22 07:00:00'),
+('C04', 'BX03', 'BX01', 'NV06', '2026-05-22 13:00:00'),
+('C05', 'BX04', 'BX05', 'NV08', '2026-05-22 15:00:00'),
+('C06', 'BX05', 'BX04', 'NV09', '2026-05-22 16:30:00'),
+('C07', 'BX06', 'BX01', 'NV12', '2026-05-23 05:00:00'),
+('C08', 'BX07', 'BX01', 'NV13', '2026-05-23 06:00:00'),
+('C09', 'BX08', 'BX03', 'NV01', '2026-05-23 08:00:00'),
+('C10', 'BX09', 'BX10', 'NV03', '2026-05-23 10:00:00'),
+('C11', 'BX11', 'BX01', 'NV04', '2026-05-23 11:00:00'),
+('C12', 'BX12', 'BX02', 'NV06', '2026-05-23 12:00:00'),
+('C13', 'BX13', 'BX04', 'NV08', '2026-05-23 14:00:00'),
+('C14', 'BX14', 'BX06', 'NV09', '2026-05-23 15:00:00'),
+('C15', 'BX15', 'BX01', 'NV12', '2026-05-23 16:00:00');
+
+INSERT INTO ve (mave, machuyen, giave, tenkhachhang) VALUES 
+('V01', 'C01', 250000, 'Khach Hang 1'),
+('V02', 'C01', 250000, 'Khach Hang 2'),
+('V03', 'C02', 180000, 'Khach Hang 3'),
+('V04', 'C03', 250000, 'Khach Hang 4'),
+('V05', 'C04', 180000, 'Khach Hang 5'),
+('V06', 'C05', 300000, 'Khach Hang 6'),
+('V07', 'C06', 300000, 'Khach Hang 7'),
+('V08', 'C07', 450000, 'Khach Hang 8'),
+('V09', 'C08', 500000, 'Khach Hang 9'),
+('V10', 'C09', 220000, 'Khach Hang 10'),
+('V11', 'C10', 120000, 'Khach Hang 11'),
+('V12', 'C11', 350000, 'Khach Hang 12'),
+('V13', 'C12', 400000, 'Khach Hang 13'),
+('V14', 'C13', 380000, 'Khach Hang 14'),
+('V15', 'C14', 150000, 'Khach Hang 15');

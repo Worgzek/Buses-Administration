@@ -1,56 +1,51 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import db  # Gọi file db.py chứa các hàm truy vấn SQL
 
 app = Flask(__name__)
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# ---------------------------------------------------------
-# 1. NHÓM TRUY VẤN (SELECT)
-# ---------------------------------------------------------
+# ----STATIONS
 
-@app.route('/stations', methods=['GET'])
+@app.route('/api/stations', methods=['GET'])
 def list_stations():
-    """Lấy danh sách tất cả bến xe"""
     data = db.get_all_stations()
     return jsonify(data)
 
-@app.route('/reports/revenue', methods=['GET'])
-def show_revenue():
-    """Lấy báo cáo doanh thu (Truy vấn 3 bảng)"""
-    data = db.get_revenue_report()
-    return jsonify(data)
-
-@app.route('/drivers/busy', methods=['GET'])
-def list_busy_drivers():
-    """Lấy danh sách tài xế chạy nhiều chuyến (HAVING)"""
-    data = db.get_busy_drivers()
-    return jsonify(data)
-
-
-# ---------------------------------------------------------
-# 2. NHÓM THAY ĐỔI DỮ LIỆU (INSERT, UPDATE, DELETE)
-# ---------------------------------------------------------
-
-@app.route('/stations', methods=['POST'])
+@app.route('/api/stations', methods=['POST'])
 def add_station():
-    """Thêm bến xe mới"""
     req = request.json
     db.add_station(req['ma'], req['ten'], req['diachi'])
     return jsonify({"status": "success", "message": "Đã thêm bến xe mới"}), 201
 
-@app.route('/tickets/<ma_ve>', methods=['PUT'])
-def update_price(ma_ve):
-    """Cập nhật giá vé"""
-    new_price = request.json.get('gia_moi')
-    db.update_ticket_price(ma_ve, new_price)
-    return jsonify({"status": "success", "message": f"Đã cập nhật vé {ma_ve}"})
+@app.route('/api/stations/<string:id>', methods=['PUT'])
+def edit_station_route(id):
+    try:
+        data = request.json
+        ten_moi = data.get('ten')
+        diachi_moi = data.get('diachi')
 
-@app.route('/tickets/<ma_ve>', methods=['DELETE'])
-def delete_ticket(ma_ve):
-    """Xóa một vé xe"""
-    db.delete_ticket(ma_ve)
-    return jsonify({"status": "success", "message": f"Đã xóa vé {ma_ve}"})
+        if not ten_moi or not diachi_moi:
+            return jsonify({"error": "Thiếu dữ liệu Tên hoặc Địa chỉ!"}), 400
+        db.edit_stations(ten_moi, diachi_moi, id)
+        
+        return jsonify({"message": "Cập nhật bến xe thành công!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/stations/<string:id>', methods=['DELETE'])
+def delete_station_route(id):
+    try:
+        db.delete_station(id)
+        return jsonify({"message": f"Đã xóa bến xe {id} thành công!"}), 200
+    except Exception as e:
+
+        error_msg = str(e)
+        if "foreign key" in error_msg.lower():
+            return jsonify({"error": "Không thể xóa! Bến xe này đang có dữ liệu liên quan."}), 400
+        return jsonify({"error": error_msg}), 500
 
 
 if __name__ == '__main__':
-    # Chạy Flask app
     app.run(debug=True,host='0.0.0.0', port=5000)
