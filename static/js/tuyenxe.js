@@ -11,13 +11,14 @@ function loadTuyenXe() {
             tbody.innerHTML = '';
 
             data.forEach(t => {
-
+                const ma = t[0]; // Mã tuyến ở vị trí đầu tiên
                 const giave = parseFloat(t[4]) || 0;
                 const formattedGia = giave.toLocaleString('vi-VN') + 'đ';
+                const tenBen = t[6] || 'Chưa gán';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><span class="fw-bold text-primary">${t[0]}</span></td>
+                    <td><span class="fw-bold text-primary">${ma}</span></td>
                     <td>
                         <div class="d-flex flex-column">
                             <span class="fw-semibold">${t[2]} <i class="fas fa-arrow-right mx-1 small text-muted"></i> ${t[3]}</span>
@@ -27,12 +28,16 @@ function loadTuyenXe() {
                     <td class="text-danger fw-bold">${formattedGia}</td>
                     <td>
                         <span class="badge rounded-pill bg-info text-dark">
-                            <i class="fas fa-map-marker-alt me-1"></i>${t[6] || 'Chưa gán'}
+                            <i class="fas fa-map-marker-alt me-1"></i>${tenBen}
                         </span>
                     </td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-warning me-1"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-sm btn-light text-primary me-2" onclick="editTuyen('${ma}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-light text-danger" onclick="deleteTuyen('${ma}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -63,9 +68,7 @@ function loadStationsForSelect() {
         .catch(err => console.error("Lỗi khi load danh sách bến vào select:", err));
 }
 
-// 3. Hàm xử lý thêm tuyến mới
 function handleAddTuyen() {
-    // 1. Lấy dữ liệu từ các ô nhập
     const ma = document.getElementById('tx-ma').value.trim();
     const dau = document.getElementById('tx-dau').value.trim();
     const cuoi = document.getElementById('tx-cuoi').value.trim();
@@ -78,17 +81,15 @@ function handleAddTuyen() {
         return;
     }
 
-    // 3. Đóng gói dữ liệu gửi lên (Key phải khớp với req['...'] trong Python)
     const payload = {
         ma: ma,
-        ten: `${dau} - ${cuoi}`, // Tự động tạo tên tuyến
+        ten: `${dau} - ${cuoi}`, 
         dau: dau,
         cuoi: cuoi,
         gia: parseFloat(gia),
         maben: maben
     };
 
-    // 4. Gọi API
     fetch('/api/tuyenxe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,13 +99,29 @@ function handleAddTuyen() {
     .then(data => {
         if (data.status === "success") {
             alert(data.message);
-            // Xóa sạch các ô nhập sau khi thêm thành công
             document.querySelectorAll('#section-tuyenxe input').forEach(i => i.value = '');
-            // Load lại bảng ngay và luôn
             loadTuyenXe();
         } else {
             alert("Lỗi: " + data.message);
         }
     })
     .catch(err => console.error("Lỗi khi thêm tuyến:", err));
+}
+
+function deleteTuyen(ma) {
+    if (!confirm(`Bạn ccó chắc muốn xóa tuyến ${ma} không?`)) return;
+
+    fetch(`/api/tuyenxe/${ma}`, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message) {
+            alert(data.message);
+            loadTuyenXe();
+        } else {
+            alert("Lỗi: " + data.error);
+        }
+    })
+    .catch(err => console.error("Lỗi xóa:", err));
 }

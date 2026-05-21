@@ -79,7 +79,7 @@ def get_all_tuyen():
                 ,ben.tenbenxe
                 from tuyen_xe tuy
                 left join ben_xe ben on tuy.mabenxe = ben.mabenxe   
-                order by tuy.matuyenxe ASC           
+                order by tuy.matuyen ASC           
             '''
     conn = get_db_connection()
     try:
@@ -99,6 +99,20 @@ def add_tuyen(ma, ten, dau, cuoi, gia, maben):
     try:
         with conn.cursor() as cur:
             cur.execute(query,(ma, ten, dau, cuoi, gia, maben))
+            conn.commit()
+    finally:
+        conn.close()
+
+def delete_tuyen(ma):
+    query = '''
+                delete 
+                from tuyen_xe
+                where matuyen = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
             conn.commit()
     finally:
         conn.close()

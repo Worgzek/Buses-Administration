@@ -58,5 +58,17 @@ def add_tuyen():
     db.add_tuyen(req['ma'], req['ten'], req['dau'], req['cuoi'], req['gia'], req['maben'])
     return jsonify({"status":"success","message":"Đã thêm tuyến xe mới!"}),201
 
+@app.route('/api/tuyenxe/<ma>', methods=['DELETE'])
+def xoa_tuyen(ma):
+    try:
+        db.delete_tuyen(ma)
+        return jsonify({"message": f"Đã xóa tuyến xe {ma} thành công!"}), 200
+    except Exception as e:
+        error_msg = str(e)
+        if "foreign key" in error_msg.lower():
+            return jsonify({"error": "Không thể xóa! Tuyến xe này đang có dữ liệu liên quan."}), 400
+        return jsonify({"error": error_msg}), 500
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
+

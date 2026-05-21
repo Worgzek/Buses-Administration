@@ -71,3 +71,9 @@ body {
 .form-control-sm {
     border-radius: 6px;
 }
+
+.content-section { display: none; }
+.content-section.active { display: block; }
+#sidebar ul li { cursor: pointer; transition: 0.3s; }
+.btn-custom { background-color: #4e73df; color: white; }
+.btn-custom:hover { background-color: #2e59d9; color: white; }

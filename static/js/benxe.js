@@ -85,7 +85,6 @@ function handleAddStation() {
     .catch(error => alert('Lỗi: ' + error.message));
 }
 
-// 4. Xóa (Nhớ viết API DELETE bên Flask nhé)
 function deleteStation(id) {
     if (confirm(`Quốc Jack chắc chắn muốn xóa bến ${id} không?`)) {
         fetch(`/api/stations/${id}`, { method: 'DELETE' })
@@ -115,7 +114,6 @@ function editStation(ma) {
             document.getElementById('edit-ten').value = tenCu;
             document.getElementById('edit-diachi').value = dcCu;
 
-            // Hiện Modal bằng Bootstrap API
             const myModal = new bootstrap.Modal(document.getElementById('editModal'));
             myModal.show();
             break;
