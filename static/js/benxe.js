@@ -108,6 +108,56 @@ function deleteStation(id) {
     }
 }
 
-function editStation(id) {
-    alert('Tính năng Sửa cho bến ' + id + ' sẽ cập nhật sau nhé!');
+// 1. Khi bấm nút Sửa: Lấy dữ liệu cũ đổ vào Modal và hiện Popup
+function editStation(ma) {
+    // Tìm dòng chứa dữ liệu trong bảng để lấy Tên và Địa chỉ cũ
+    const tableBody = document.getElementById('table-body');
+    const rows = tableBody.getElementsByTagName('tr');
+    
+    for (let row of rows) {
+        if (row.cells[0].innerText === ma) {
+            const tenCu = row.cells[1].innerText;
+            const dcCu = row.cells[2].innerText;
+
+            // Đổ dữ liệu vào các ô trong Modal
+            document.getElementById('display-ma-bx').innerText = ma;
+            document.getElementById('edit-ma').value = ma;
+            document.getElementById('edit-ten').value = tenCu;
+            document.getElementById('edit-diachi').value = dcCu;
+
+            // Hiện Modal bằng Bootstrap API
+            const myModal = new bootstrap.Modal(document.getElementById('editModal'));
+            myModal.show();
+            break;
+        }
+    }
+}
+
+// 2. Khi bấm nút "Lưu thay đổi" trong Modal
+function submitEdit() {
+    const ma = document.getElementById('edit-ma').value;
+    const ten = document.getElementById('edit-ten').value.trim();
+    const diachi = document.getElementById('edit-diachi').value.trim();
+
+    if (!ten || !diachi) {
+        alert('Vui lòng không để trống thông tin!');
+        return;
+    }
+
+    const payload = { ten, diachi };
+
+    fetch(`/api/stations/${ma}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => {
+        if (res.ok) {
+            alert('Cập nhật thành công!');
+            location.reload(); // Hoặc gọi loadStations() và ẩn modal
+        } else {
+            alert('Lỗi cập nhật!');
+        }
+    })
+    .catch(err => console.error('Lỗi:', err));
 }

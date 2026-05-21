@@ -65,18 +65,3 @@ def edit_stations(ten, diachi, ma):
     finally:
         conn.close()
 
-def get_revenue_report():
-    query = """
-        SELECT b.TenBenXe, SUM(v.GiaVe) AS TongDoanhThu
-        FROM BEN_XE b 
-        JOIN CHUYEN_XE c ON b.MaBenXe = c.MaBenDi
-        JOIN VE v ON c.MaChuyen = v.MaChuyen
-        GROUP BY b.TenBenXe;
-    """
-    conn = get_db_connection()
-    try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute(query)
-            return cur.fetchall()
-    finally:
-        conn.close()
