@@ -69,6 +69,34 @@ def xoa_tuyen(ma):
             return jsonify({"error": "Không thể xóa! Tuyến xe này đang có dữ liệu liên quan."}), 400
         return jsonify({"error": error_msg}), 500
 
+@app.route('/api/tuyenxe/<ma>', methods=['GET'])
+def get_one_tuyen(ma):
+    data = db.get_tuyen_by_id(ma)
+    return jsonify(data)
+
+@app.route('/api/tuyenxe/<ma>', methods=['PUT'])
+def edit_tuyen(ma):
+    req = request.json
+    try:
+
+        db.edit_tuyen(
+            ma, 
+            req['ten'], 
+            req['dau'], 
+            req['cuoi'], 
+            req['gia'], 
+            req['maben']
+        )
+        return jsonify({
+            "status": "success", 
+            "message": f"Đã cập nhật tuyến {ma} thành công!"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "error", 
+            "message": str(e)
+        }), 500
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

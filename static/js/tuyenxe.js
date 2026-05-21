@@ -11,7 +11,7 @@ function loadTuyenXe() {
             tbody.innerHTML = '';
 
             data.forEach(t => {
-                const ma = t[0]; // Mã tuyến ở vị trí đầu tiên
+                const ma = t[0];
                 const giave = parseFloat(t[4]) || 0;
                 const formattedGia = giave.toLocaleString('vi-VN') + 'đ';
                 const tenBen = t[6] || 'Chưa gán';
@@ -124,4 +124,75 @@ function deleteTuyen(ma) {
         }
     })
     .catch(err => console.error("Lỗi xóa:", err));
+}
+
+async function editTuyen(ma) {
+    // 1. Hiện mã tuyến lên Modal trước
+    document.getElementById('display-ma-tx').innerText = ma;
+    document.getElementById('edit-tx-ma').value = ma;
+
+    try {
+        // 2. Load danh sách tất cả các bến vào Dropdown (Dropbox)
+        const resBen = await fetch('/api/stations'); // Route lấy list bến xe của ông
+        const listBen = await resBen.json();
+        const selectBen = document.getElementById('edit-tx-mabenxe');
+        selectBen.innerHTML = '';
+        
+        listBen.forEach(bx => {
+            // Lưu ý: Nếu listBen trả về Array thô thì dùng bx[0], bx[1]
+            // Nếu trả về Object thì dùng bx.mabenxe, bx.tenbenxe
+            const option = document.createElement('option');
+            option.value = bx.mabenxe || bx[0];
+            option.textContent = bx.tenbenxe || bx[1];
+            selectBen.appendChild(option);
+        });
+
+        // 3. Lấy dữ liệu hiện tại của tuyến này để điền vào form
+        const resTuyen = await fetch(`/api/tuyenxe/${ma}`);
+        const t = await resTuyen.json();
+
+        // Giả sử t là mảng index theo db.py ở trên: 0:matuyen, 2:diemdau, 3:diemcuoi, 4:giave, 5:mabenxe
+        document.getElementById('edit-tx-dau').value = t[2];
+        document.getElementById('edit-tx-cuoi').value = t[3];
+        document.getElementById('edit-tx-gia').value = t[4];
+        document.getElementById('edit-tx-mabenxe').value = t[5]; // Tự động chọn đúng bến xe cũ
+
+        // 4. Mở Modal
+        new bootstrap.Modal(document.getElementById('editTuyenModal')).show();
+
+    } catch (err) {
+        console.error("Lỗi khi chuẩn bị Modal Edit:", err);
+    }
+}
+
+function submitEditTuyen() {
+    const ma = document.getElementById('edit-tx-ma').value;
+    const dau = document.getElementById('edit-tx-dau').value;
+    const cuoi = document.getElementById('edit-tx-cuoi').value;
+    const gia = document.getElementById('edit-tx-gia').value;
+    const maben = document.getElementById('edit-tx-mabenxe').value;
+
+    const payload = {
+        ma: ma,
+        ten: `${dau} - ${cuoi}`, // TỰ ĐỘNG GEN TÊN TUYẾN Ở ĐÂY
+        dau: dau,
+        cuoi: cuoi,
+        gia: parseFloat(gia),
+        maben: maben
+    };
+
+    fetch(`/api/tuyenxe/${ma}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert("Cập nhật thành công!");
+        // Đóng modal
+        const modalEl = document.getElementById('editTuyenModal');
+        bootstrap.Modal.getInstance(modalEl).hide();
+        // Load lại bảng
+        loadTuyenXe();
+    });
 }

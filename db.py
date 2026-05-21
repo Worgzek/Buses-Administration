@@ -116,3 +116,39 @@ def delete_tuyen(ma):
             conn.commit()
     finally:
         conn.close()
+
+def get_tuyen_by_id(ma):
+    query = '''
+        SELECT tuy.*, ben.tenbenxe 
+        FROM tuyen_xe tuy
+        LEFT JOIN ben_xe ben ON tuy.mabenxe = ben.mabenxe
+        WHERE tuy.matuyen = %s
+    '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma,))
+            return cur.fetchone()
+    finally:
+        conn.close()
+
+def edit_tuyen(ma, ten, dau, cuoi, gia, maben):
+    query = '''
+        UPDATE tuyen_xe 
+        SET tentuyen = %s, 
+            diemdau = %s, 
+            diemcuoi = %s, 
+            giave = %s, 
+            mabenxe = %s
+        WHERE matuyen = %s
+    '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ten, dau, cuoi, gia, maben, ma))
+            conn.commit()
+    except Exception as e:
+        print(f"Lỗi SQL Update: {e}")
+        raise e
+    finally:
+        conn.close()

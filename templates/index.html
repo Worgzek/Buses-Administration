@@ -148,29 +148,79 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh sửa Bến xe: <span id="display-ma-bx"></span></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-success text-white"> <h5 class="modal-title" id="editModalLabel">
+                        <i class="fas fa-map-marker-alt me-2"></i>Chỉnh sửa Bến xe: <span id="display-ma-bx" class="fw-bold"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <form id="edit-form">
                         <input type="hidden" id="edit-ma"> 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Tên bến xe mới</label>
-                            <input type="text" class="form-control" id="edit-ten">
+                            <label class="form-label fw-bold small text-uppercase">Tên bến xe mới</label>
+                            <input type="text" class="form-control bg-light" id="edit-ten" placeholder="Nhập tên bến xe...">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Địa chỉ mới</label>
-                            <input type="text" class="form-control" id="edit-diachi">
+                            <label class="form-label fw-bold small text-uppercase">Địa chỉ mới</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-location-dot text-success"></i></span>
+                                <input type="text" class="form-control bg-light" id="edit-diachi" placeholder="Nhập địa chỉ cụ thể...">
+                            </div>
                         </div>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary" onclick="submitEdit()">Lưu thay đổi</button>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success px-4 shadow-sm text-white" onclick="submitEdit()">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editTuyenModal" tabindex="-1" aria-labelledby="editTuyenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white"> <h5 class="modal-title" id="editTuyenModalLabel">
+                        <i class="fas fa-route me-2"></i>Chỉnh sửa tuyến: <span id="display-ma-tx" class="fw-bold"></span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="edit-tuyen-form">
+                        <input type="hidden" id="edit-tx-ma">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Điểm đầu</label>
+                                <input type="text" class="form-control bg-light" id="edit-tx-dau" placeholder="Ví dụ: Sài Gòn">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold small text-uppercase">Điểm cuối</label>
+                                <input type="text" class="form-control bg-light" id="edit-tx-cuoi" placeholder="Ví dụ: Đà Lạt">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold small text-uppercase">Giá vé (VNĐ)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-danger fw-bold">₫</span>
+                                    <input type="number" class="form-control bg-light" id="edit-tx-gia">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold small text-uppercase">Bến xe quản lý</label>
+                                <select id="edit-tx-mabenxe" class="form-select bg-light shadow-sm"></select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer bg-light border-0">
+                    <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary px-4 shadow-sm" onclick="submitEditTuyen()">
+                        <i class="fas fa-save me-2"></i>Lưu thay đổi
+                    </button>
                 </div>
             </div>
         </div>
