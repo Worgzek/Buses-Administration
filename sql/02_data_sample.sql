@@ -69,21 +69,21 @@ INSERT INTO TUYEN_XE (MaTuyen, TenTuyen, MaBXdau, MaBXcuoi, GiaVe) VALUES
 ('107', 'Kim Mã - Làng VH các dân tộc VN', 'BX_KIMMA', 'BX_LVH', 9000.00);
 
 INSERT INTO XE_BUS (MaXe, BienSo, SoCho, TrangThai, MaTuyen) VALUES
-('X01', '51B-111.11', 45, 'Đang hoạt động', 'T01'),
-('X02', '29B-222.22', 34, 'Đang hoạt động', 'T02'),
-('X03', '65B-333.33', 16, 'Bảo trì', 'T03'),
-('X04', '30F-444.44', 45, 'Đang hoạt động', 'T04'),
-('X05', '43B-555.55', 29, 'Đang hoạt động', 'T05'),
-('X06', '68B-666.66', 34, 'Đang hoạt động', 'T06'),
-('X07', '49B-777.77', 16, 'Đang hoạt động', 'T07'),
-('X08', '72B-888.88', 29, 'Sẵn sàng', 'T08'),
-('X09', '79B-999.99', 45, 'Đang hoạt động', 'T09'),
-('X10', '77B-123.45', 34, 'Đang hoạt động', 'T10'),
-('X11', '47B-567.89', 29, 'Bảo trì', 'T11'),
-('X12', '37B-000.01', 45, 'Đang hoạt động', 'T12'),
-('X13', '75B-111.22', 34, 'Đang hoạt động', 'T13'),
-('X14', '68A-333.44', 16, 'Đang hoạt động', 'T14'),
-('X15', '69B-555.66', 45, 'Đang hoạt động', 'T15');
+('X01', '51B-111.11', 45, 'Đang hoạt động', '01'),
+('X02', '29B-222.22', 34, 'Đang hoạt động', '02'),
+('X03', '65B-333.33', 16, 'Bảo trì', '08'),
+('X04', '30F-444.44', 45, 'Đang hoạt động', '16'),
+('X05', '43B-555.55', 29, 'Đang hoạt động', '21'),
+('X06', '68B-666.66', 34, 'Đang hoạt động', '26'),
+('X07', '49B-777.77', 16, 'Đang hoạt động', '27'),
+('X08', '72B-888.88', 29, 'Sẵn sàng', '28'),
+('X09', '79B-999.99', 45, 'Đang hoạt động', '32'),
+('X10', '77B-123.45', 34, 'Đang hoạt động', '34'),
+('X11', '47B-567.89', 29, 'Bảo trì', '38'),
+('X12', '37B-000.01', 45, 'Đang hoạt động', '39'),
+('X13', '75B-111.22', 34, 'Đang hoạt động', '50'),
+('X14', '68A-333.44', 16, 'Đang hoạt động', '54'),
+('X15', '69B-555.66', 45, 'Đang hoạt động', '107');
 
 INSERT INTO nhan_vien (manhanvien, tennhanvien, loainhanvien, sodienthoai) VALUES 
 ('NV01', 'Nguyen Van Hung', 'Tai xe', '0901234561'),

@@ -95,6 +95,12 @@ def edit_tuyen(ma):
             "message": str(e)
         }), 500
 
+#----XE
+@app.route('/api/xe', methods=['GET'])
+def get_xe():
+    data = db.get_all_xe()
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

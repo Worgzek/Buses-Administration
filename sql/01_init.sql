@@ -1,6 +1,5 @@
--- 1. Bến Xe (Chạy đầu tiên)
 CREATE TABLE BEN_XE (
-    MaBenXe VARCHAR(20) PRIMARY KEY, -- Thống nhất độ dài 20
+    MaBenXe VARCHAR(20) PRIMARY KEY,
     TenBenXe VARCHAR(100) NOT NULL,
     DiaChi TEXT
 );
@@ -21,7 +20,6 @@ CREATE TABLE HANH_KHACH (
     SoDienThoai VARCHAR(15)
 );
 
--- 4. Tuyến Xe (Phải sửa độ dài MaBXdau)
 CREATE TABLE TUYEN_XE (
     MaTuyen VARCHAR(20) PRIMARY KEY,
     TenTuyen VARCHAR(100) NOT NULL,
@@ -39,7 +37,6 @@ CREATE TABLE XE_BUS (
     MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen)
 );
 
--- 6. Nhân Viên (Phải sửa độ dài MaBenXe)
 CREATE TABLE NHAN_VIEN (
     MaNhanVien VARCHAR(10) PRIMARY KEY,
     TenNhanVien VARCHAR(100) NOT NULL,

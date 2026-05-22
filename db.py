@@ -14,7 +14,8 @@ def get_db_connection():
         port=os.getenv('DB_PORT')
     )
 
-#---Ben xe
+#---BEN XE
+
 def get_all_stations():
     query = '''
                 SELECT * FROM ben_xe
@@ -22,7 +23,7 @@ def get_all_stations():
             '''
     conn = get_db_connection()
     try:
-        with conn.cursor(cursor_factory=RealDictCursor) as cur:
+        with conn.cursor() as cur:
             cur.execute(query)
             return cur.fetchall()
     finally:
@@ -71,7 +72,8 @@ def edit_stations(ten, diachi, ma):
     finally:
         conn.close()
 
-#---Tuyen xe
+#---TUYEN XE
+
 def get_all_tuyen():
     query = '''
         SELECT 
@@ -153,8 +155,28 @@ def edit_tuyen(ma, ten, dau, cuoi, gia):
         with conn.cursor() as cur:
             cur.execute(query, (ten, dau, cuoi, gia, ma))
             conn.commit()
-    except Exception as e:
-        print(f"Lỗi SQL Update: {e}")
-        raise e
+
+    finally:
+        conn.close()
+
+#-----XE
+
+def get_all_xe():
+    query = '''
+                select
+                xe.MaXe
+                ,xe.BienSo
+                ,xe.SoCho
+                ,xe.TrangThai
+                ,tuy.tentuyen
+                from xe_bus xe
+                left join tuyen_xe tuy on xe.matuyen = tuy.matuyen
+                order by MaXe asc
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
     finally:
         conn.close()

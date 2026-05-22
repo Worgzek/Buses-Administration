@@ -48,7 +48,6 @@ function renderTable(data) {
     });
 }
 
-
 async function handleAddStation() {
     const ma = document.getElementById('bx-ma').value.trim();
     const ten = document.getElementById('bx-ten').value.trim();
@@ -58,15 +57,12 @@ async function handleAddStation() {
         alert('Vui lòng nhập đầy đủ Mã và Tên bến xe!');
         return;
     }
-
     try {
         const response = await fetch('/api/stations', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ ma, ten, diachi })
         });
-
-        // TRƯỜNG HỢP 1: THÀNH CÔNG (200, 201)
         if (response.ok) {
             alert('Thêm bến xe thành công!');
             document.getElementById('bx-ma').value = '';
@@ -106,7 +102,6 @@ function editStation(ma) {
             const tenCu = row.cells[1].innerText;
             const dcCu = row.cells[2].innerText;
 
-            // Đổ dữ liệu vào các ô trong Modal
             document.getElementById('display-ma-bx').innerText = ma;
             document.getElementById('edit-ma').value = ma;
             document.getElementById('edit-ten').value = tenCu;
