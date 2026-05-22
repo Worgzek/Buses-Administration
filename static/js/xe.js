@@ -50,12 +50,11 @@ function loadXeBus() {
         .catch(err => console.error('Lỗi load xe bus:', err));
 }
 
-// Hàm này để load danh sách tuyến vào cái dropdown khi thêm xe mới
 function loadTuyenSelect() {
     const select = document.getElementById('xe-tuyen');
     if (!select) return;
 
-    fetch('/api/tuyenxe') // Giả định endpoint tuyến xe của ông
+    fetch('/api/tuyenxe')
         .then(res => res.json())
         .then(data => {
             select.innerHTML = '<option value="">-- Chọn tuyến đảm nhận --</option>';
@@ -65,4 +64,46 @@ function loadTuyenSelect() {
                 select.innerHTML += `<option value="${ma}">${ten}</option>`;
             });
         });
+}
+
+async function handleAddXe() {
+    // 1. Lấy dữ liệu từ các ô Input (Ông check kỹ ID trong HTML xem có khớp không nhé)
+    const data = {
+        ma: document.getElementById('xe-ma').value,
+        bien: document.getElementById('xe-bienso').value,
+        cho: document.getElementById('xe-socho').value,
+        tuyen: document.getElementById('xe-tuyen').value // Đây nên là Mã Tuyến (T01, T02...)
+    };
+
+    try {
+        // 2. Gửi yêu cầu POST lên API
+        const response = await fetch('/api/xe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // 3. Nếu thành công
+            alert(result.message); // Hiện: "Thành công! Xe hiện ở trạng thái: Sẵn sàng"
+            
+
+            // Reset form cho lần sau
+            document.getElementById('xe-ma').value = '';
+            document.getElementById('xe-bienso').value = '';
+            document.getElementById('xe-socho').value = '';
+            document.getElementById('xe-tuyen').selectedIndex = 0; // Đưa select về cái đầu tiên
+            loadXeBus(); 
+        } else {
+            // 4. Nếu lỗi (Trùng mã, thiếu trường...)
+            alert("Lỗi: " + result.message);
+        }
+    } catch (error) {
+        console.error("Lỗi kết nối:", error);
+        alert("Không thể kết nối đến server!");
+    }
 }

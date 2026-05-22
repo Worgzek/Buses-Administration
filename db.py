@@ -184,3 +184,19 @@ def get_all_xe():
             return cur.fetchall()
     finally:
         conn.close()
+
+def add_xe(ma, bien, cho, tuyen):
+    ttg = 'Sẵn sàng' if (tuyen and str(tuyen).strip() != "") else 'Chưa gán tuyến'
+    ma_tuyen = tuyen if (tuyen and str(tuyen).strip() != "") else None
+
+    query = '''
+            INSERT INTO xe_bus (MaXe, BienSo, SoCho, TrangThai, MaTuyen)
+            VALUES (%s, %s, %s, %s, %s)
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma, bien, cho, ttg, ma_tuyen))
+            conn.commit()
+    finally:
+        conn.close()

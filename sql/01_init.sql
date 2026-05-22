@@ -33,8 +33,9 @@ CREATE TABLE XE_BUS (
     MaXe VARCHAR(10) PRIMARY KEY,
     BienSo VARCHAR(20) UNIQUE NOT NULL,
     SoCho INTEGER CHECK (SoCho > 0),
-    TrangThai VARCHAR(50),
-    MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen)
+    TrangThai VARCHAR(50) DEFAULT 'Chưa gán tuyến' 
+        CHECK (TrangThai IN ('Sẵn sàng', 'Đang hoạt động', 'Bảo trì', 'Chưa gán tuyến')),
+    MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen) ON DELETE SET NULL
 );
 
 CREATE TABLE NHAN_VIEN (
@@ -50,11 +51,13 @@ CREATE TABLE CHUYEN_XE (
     MaChuyen VARCHAR(10) PRIMARY KEY,
     NgayKhoiHanh DATE NOT NULL,
     GioKhoiHanh TIME NOT NULL,
-    MaXe VARCHAR(10) REFERENCES XE_BUS(MaXe),
+    MaXe VARCHAR(10) REFERENCES XE_BUS(MaXe) ON DELETE CASCADE,
+    MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen), -- Để biết chuyến này chạy tuyến nào
     MaTaiXe VARCHAR(10) REFERENCES TAI_XE(MaTaiXe),
-    TrangThai VARCHAR(50)
+    TrangThai VARCHAR(50) DEFAULT 'Sắp chạy'
+        CHECK (TrangThai IN ('Sắp chạy', 'Đang chạy', 'Hoàn thành', 'Hủy')),
+    CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Để sau này làm thống kê ML
 );
-
 -- 8. Vé (Bảng cuối cùng)
 CREATE TABLE VE (
     MaVe VARCHAR(10) PRIMARY KEY,

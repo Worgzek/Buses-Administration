@@ -86,6 +86,27 @@ def get_xe():
     data = db.get_all_xe()
     return jsonify(data)
 
+@app.route('/api/xe', methods=['POST'])
+def add_xe_route():
+    req = request.json
+    try:
+        ma = req.get('ma')
+        bien = req.get('bien')
+        cho = req.get('cho')
+        tuyen = req.get('tuyen')
+
+        if not ma or not bien or not cho:
+            return jsonify({"status": "error", "message": "Mã xe, biển số và số chỗ không được để trống!"}), 400
+
+        db.add_xe(ma, bien, cho, tuyen)
+        status_msg = 'Sẵn sàng' if tuyen else 'Chưa gán tuyến'
+        return jsonify({"status": "success", "message": f"Thành công! Xe hiện ở trạng thái: {status_msg}"}), 200
+
+    except Exception as e:
+        if "duplicate" in str(e).lower():
+            return jsonify({"status": "error", "message": "Mã xe hoặc Biển số đã tồn tại trong hệ thống!"}), 400
+        return jsonify({"status": "error", "message": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 
