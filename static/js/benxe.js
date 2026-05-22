@@ -31,7 +31,7 @@ function renderTable(data) {
 
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td><span class="fw-bold text-dark">${ma}</span></td>
+            <td><span class="fw-bold text-primary">${ma}</span></td>
             <td>${ten}</td>
             <td>${dc}</td>
             <td><span class="badge bg-success-subtle text-success px-3">Sẵn sàng</span></td>

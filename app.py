@@ -40,11 +40,9 @@ def delete_station_route(id):
         db.delete_station(id)
         return jsonify({"message": f"Đã xóa bến xe {id} thành công!"}), 200
     except Exception as e:
-
-        error_msg = str(e)
-        if "foreign key" in error_msg.lower():
+        if "foreign key" in str(e).lower():
             return jsonify({"error": "Không thể xóa! Bến xe này đang có dữ liệu liên quan."}), 400
-        return jsonify({"error": error_msg}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # ----tuyen xe
 @app.route('/api/tuyenxe', methods=['GET'])
@@ -62,12 +60,11 @@ def add_tuyen():
 def xoa_tuyen(ma):
     try:
         db.delete_tuyen(ma)
-        return jsonify({"message": f"Đã xóa tuyến xe {ma} thành công!"}), 200
+        return jsonify({"status": "success", "message": f"Đã xóa tuyến xe {ma} thành công!"}), 200
     except Exception as e:
-        error_msg = str(e)
-        if "foreign key" in error_msg.lower():
+        if "foreign key" in str(e).lower():
             return jsonify({"error": "Không thể xóa! Tuyến xe này đang có dữ liệu liên quan."}), 400
-        return jsonify({"error": error_msg}), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/tuyenxe/<ma>', methods=['GET'])
 def get_one_tuyen(ma):
@@ -78,22 +75,10 @@ def get_one_tuyen(ma):
 def edit_tuyen(ma):
     req = request.json
     try:
-        db.edit_tuyen(
-            ma, 
-            req['ten'], 
-            req['dau'], 
-            req['cuoi'], 
-            req['gia'], 
-        )
-        return jsonify({
-            "status": "success", 
-            "message": f"Đã cập nhật tuyến {ma} thành công!"
-        }), 200
+        db.edit_tuyen(ma, req['ten'], req['dau'], req['cuoi'], req['gia'])
+        return jsonify({"status": "success", "message": f"Đã cập nhật tuyến {ma} thành công!"}), 200
     except Exception as e:
-        return jsonify({
-            "status": "error", 
-            "message": str(e)
-        }), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 #----XE
 @app.route('/api/xe', methods=['GET'])

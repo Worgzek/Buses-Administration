@@ -77,10 +77,11 @@ def edit_stations(ten, diachi, ma):
 def get_all_tuyen():
     query = '''
         SELECT 
-            t.matuyen, t.tentuyen, 
-            b1.tenbenxe AS ten_dau, 
-            b2.tenbenxe AS ten_cuoi, 
-            t.giave
+            t.matuyen
+            ,t.tentuyen
+            ,b1.tenbenxe AS ten_dau
+            ,b2.tenbenxe AS ten_cuoi
+            ,t.giave
         FROM tuyen_xe t
         LEFT JOIN ben_xe b1 ON t.maBXdau = b1.mabenxe
         LEFT JOIN ben_xe b2 ON t.maBXcuoi = b2.mabenxe
@@ -125,9 +126,13 @@ def delete_tuyen(ma):
 def get_tuyen_by_id(ma):
     query = '''
         SELECT 
-            t.matuyen, t.tentuyen, t.maBXdau, t.maBXcuoi, t.giave,
-            b1.tenbenxe AS ten_dau, 
-            b2.tenbenxe AS ten_cuoi
+            t.matuyen
+            ,t.tentuyen
+            ,t.maBXdau
+            ,t.maBXcuoi
+            ,t.giave
+            ,b1.tenbenxe AS ten_dau
+            ,b2.tenbenxe AS ten_cuoi
         FROM tuyen_xe t
         LEFT JOIN ben_xe b1 ON t.maBXdau = b1.mabenxe
         LEFT JOIN ben_xe b2 ON t.maBXcuoi = b2.mabenxe 
