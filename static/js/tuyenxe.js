@@ -29,10 +29,10 @@ function loadTuyenXe() {
                     </td>
                     <td class="text-danger fw-bold">${giave}</td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary me-2" onclick="editTuyen('${ma}')">
+                        <button class="btn btn-sm btn-light text-primary me-2" onclick="editTuyen('${ma}')">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-sm btn-outline-danger" onclick="deleteTuyen('${ma}')">
+                        <button class="btn btn-sm btn-light text-danger" onclick="deleteTuyen('${ma}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
