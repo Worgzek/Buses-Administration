@@ -107,6 +107,54 @@ def add_xe_route():
             return jsonify({"status": "error", "message": "Mã xe hoặc Biển số đã tồn tại trong hệ thống!"}), 400
         return jsonify({"status": "error", "message": str(e)}), 500
     
+@app.route('/api/xe/<ma>', methods=['DELETE'])
+def delete_xe(ma):
+    try:
+        db.xoa_xe(ma)
+        return jsonify({"status": "success", "message": f"Đã xóa xe {ma} thành công!"}), 200
+    except Exception as e:
+        if "foreign key" in str(e).lower():
+            return jsonify({"error": "Không thể xóa! Xe này đang có dữ liệu liên quan."}), 400
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+@app.route('/api/xe/<ma>', methods=['GET'])
+def get_one_xe(ma):
+    xe = db.get_one_xe(ma)
+    if xe:
+        return jsonify({
+            "MaXe": xe,
+            "BienSo": xe[0],
+            "SoCho": xe[1],
+            "MaTuyen": xe[2]
+        })
+    return jsonify({"error": "Không tìm thấy xe"}), 404
+
+@app.route('/api/xe/<ma>', methods=['PUT'])
+def edit_xe_route(ma):
+    req = request.json
+    try:
+        bien = req.get('bien')
+        cho = req.get('cho')
+        tuyen = req.get('tuyen')
+
+        if not bien or not cho:
+            return jsonify({"status": "error", "message": "Biển số và số chỗ không được để trống!"}), 400
+
+        ma_tuyen = tuyen if tuyen and str(tuyen).strip() != "" else None
+        trang_thai_moi = 'Sẵn sàng' if ma_tuyen else 'Chưa gán tuyến'
+
+        db.update_xe(ma, bien, cho, ma_tuyen, trang_thai_moi)
+        
+        return jsonify({
+            "status": "success", 
+            "message": f"Cập nhật xe {ma} thành công!",
+            "new_status": trang_thai_moi
+        }), 200
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Lỗi server: {str(e)}"}), 500
+  
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

@@ -51,19 +51,25 @@ function loadXeBus() {
 }
 
 function loadTuyenSelect() {
-    const select = document.getElementById('xe-tuyen');
-    if (!select) return;
+    const selectIds = ['xe-tuyen', 'edit-xe-tuyen'];
 
     fetch('/api/tuyenxe')
         .then(res => res.json())
         .then(data => {
-            select.innerHTML = '<option value="">-- Chọn tuyến đảm nhận --</option>';
-            data.forEach(t => {
-                const ma = t[0];
-                const ten = t[1];
-                select.innerHTML += `<option value="${ma}">${ten}</option>`;
+
+            selectIds.forEach(id => {
+                const select = document.getElementById(id);
+                if (!select) return; // Nếu không tìm thấy ID này thì bỏ qua cái tiếp theo
+
+                select.innerHTML = '<option value="">-- Chọn tuyến đảm nhận --</option>';
+                data.forEach(t => {
+                    const ma = t[0];
+                    const ten = t[1];
+                    select.innerHTML += `<option value="${ma}">${ten}</option>`;
+                });
             });
-        });
+        })
+        .catch(err => console.error("Lỗi fetch tuyến:", err));
 }
 
 async function handleAddXe() {
@@ -107,3 +113,95 @@ async function handleAddXe() {
         alert("Không thể kết nối đến server!");
     }
 }
+
+function deleteXe(ma) {
+    if (!confirm(`Bạn có chắc muốn xóa xe ${ma} không?`)) return;
+
+    fetch(`/api/xe/${ma}`, { method: 'DELETE' })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message || data.error);
+        loadXeBus();
+    });
+}
+
+async function editXe(ma) {
+    try {
+        const response = await fetch(`/api/xe/${ma}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Không thể lấy thông tin xe");
+            return;
+        }
+
+        // Đổ dữ liệu vào Modal - Phải khớp với các Key viết Hoa ở app.py
+        document.getElementById('display-ma-xe').innerText = ma;
+        document.getElementById('edit-xe-ma').value = ma;
+        document.getElementById('edit-xe-bienso').value = data.BienSo; // Viết Hoa chữ B
+        document.getElementById('edit-xe-socho').value = data.SoCho;   // Viết Hoa chữ S
+        document.getElementById('edit-xe-tuyen').value = data.MaTuyen || ""; // Viết Hoa chữ M
+
+        const myModal = new bootstrap.Modal(document.getElementById('editXeModal'));
+        myModal.show();
+    } catch (error) {
+        console.error("Lỗi Edit:", error);
+    }
+}
+
+async function submitEditXe() {
+    // 1. Lấy mã xe từ cái input hidden mà mình đã gán lúc mở Modal
+    const maXe = document.getElementById('edit-xe-ma').value;
+    
+    // 2. Gom dữ liệu mới từ các ô input trong Modal
+    const data = {
+        bien: document.getElementById('edit-xe-bienso').value,
+        cho: document.getElementById('edit-xe-socho').value,
+        tuyen: document.getElementById('edit-xe-tuyen').value
+    };
+
+    // Kiểm tra nhanh tránh gửi dữ liệu rỗng
+    if (!data.bien || !data.cho) {
+        alert("Vui lòng nhập đầy đủ Biển số và Số chỗ!");
+        return;
+    }
+
+    try {
+        // 3. Gửi yêu cầu PUT lên Flask
+        const response = await fetch(`/api/xe/${maXe}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // 4. Nếu thành công
+            alert(result.message); // Hiện: "Cập nhật xe XE01 thành công!"
+
+            // Đóng Modal (Dùng API của Bootstrap)
+            const modalElement = document.getElementById('editXeModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            // 5. Cập nhật lại bảng mà không cần load lại trang
+            loadXeBus(); 
+        } else {
+            // Hiển thị lỗi từ server (Ví dụ: Lỗi validation)
+            alert("Lỗi: " + result.message);
+        }
+    } catch (error) {
+        console.error("Lỗi khi cập nhật:", error);
+        alert("Không thể kết nối đến máy chủ!");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadXeBus();
+    loadTuyenSelect();
+});

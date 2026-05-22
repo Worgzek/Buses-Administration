@@ -200,3 +200,49 @@ def add_xe(ma, bien, cho, tuyen):
             conn.commit()
     finally:
         conn.close()
+
+def xoa_xe(ma):
+    query = '''
+            delete
+            from xe_bus
+            where maxe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
+            conn.commit()
+    finally:
+        conn.close()
+
+def get_one_xe(ma):
+    query = '''
+                select 
+                xe.bienso
+                ,xe.socho
+                ,tuy.matuyen
+                from xe_bus xe
+                left join tuyen_xe tuy on xe.matuyen = tuy.matuyen
+                where xe.maxe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
+            return cur.fetchone()
+    finally:
+        conn.close()
+
+def update_xe(ma, bien, cho, tuyen, trang_thai):
+    query = '''
+            UPDATE XE_BUS 
+            SET BienSo = %s, SoCho = %s, MaTuyen = %s, TrangThai = %s
+            WHERE MaXe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (bien, cho, tuyen, trang_thai, ma))
+            conn.commit()
+    finally:
+        conn.close()
