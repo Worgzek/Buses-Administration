@@ -8,8 +8,7 @@ CREATE TABLE TAI_XE (
     MaTaiXe VARCHAR(10) PRIMARY KEY,
     TenTaiXe VARCHAR(100) NOT NULL,
     SoDienThoai VARCHAR(15),
-    BangLai VARCHAR(50),
-    NgaySinh DATE
+    BangLai VARCHAR(50)
 );
 
 CREATE TABLE HANH_KHACH (

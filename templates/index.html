@@ -24,7 +24,7 @@
             <li id="menu-xe" onclick="showSection('xe')">
                 <i class="fas fa-bus-alt me-2"></i> Xe Bus
             </li>
-            <li onclick="alert('Tính năng đang phát triển!')">
+            <li id="menu-nhansu" onclick="showSection('nhansu')">
                 <i class="fas fa-users me-2"></i> Nhân viên
             </li>
         </ul>
@@ -178,6 +178,116 @@
                     </div>
                 </div>
             </div>
+
+            <div id="section-nhansu" class="content-section" style="display: none;">
+                <ul class="nav nav-pills mb-4 shadow-sm p-2 bg-white rounded" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <button class="nav-link active me-2" data-bs-toggle="pill" data-bs-target="#tab-nv" type="button">
+                            <i class="fas fa-user-tie me-2"></i>Nhân Viên
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-tx" type="button">
+                            <i class="fas fa-id-card me-2"></i>Tài Xế
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="tab-nv">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4 text-primary"><i class="fas fa-plus-circle me-2"></i>Thêm Nhân Viên Mới</h5>
+                                <div class="row g-2"> <div class="col-md-1">
+                                        <label class="form-label small fw-bold">Mã NV</label>
+                                        <input type="text" id="nv-ma" class="form-control" placeholder="NV01">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold">Họ Tên</label>
+                                        <input type="text" id="nv-ten" class="form-control" placeholder="Nguyễn Văn A">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Chức Vụ</label>
+                                        <select id="nv-chucvu" class="form-select">
+                                            <option value="Bán vé">Bán vé</option>
+                                            <option value="Điều hành">Điều hành</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Số điện thoại</label>
+                                        <input type="text" id="nv-sdt" class="form-control" placeholder="0912...">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Bến Làm Việc</label>
+                                        <select id="nv-benxe" class="form-select select-benxe"></select>
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100 fw-bold" onclick="handleAddNhanVien()">Lưu NV</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-container shadow-sm p-4 bg-white rounded">
+                            <h5 class="fw-bold mb-3">Danh Sách Nhân Viên</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã NV</th><th>Họ Tên</th><th>Chức Vụ</th><th>SĐT</th><th>Bến</th><th class="text-center">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-body-nv"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="tab-tx">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4 text-success"><i class="fas fa-plus-circle me-2"></i>Thêm Tài Xế Mới</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Mã TX</label>
+                                        <input type="text" id="tx-ma" class="form-control" placeholder="TX01">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold">Họ Tên</label>
+                                        <input type="text" id="tx-ten" class="form-control" placeholder="Trần Văn B">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label small fw-bold">Bằng Lái</label>
+                                        <input type="text" id="tx-bang" class="form-control" placeholder="Hạng E">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label small fw-bold">Số điện thoại</label>
+                                        <input type="text" id="tx-sdt" class="form-control" placeholder="0987...">
+                                    </div>
+                                    <div class="col-md-2 d-flex align-items-end">
+                                        <button class="btn btn-success w-100 fw-bold" onclick="handleAddTaiXe()">Lưu Tài Xế</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="table-container shadow-sm p-4 bg-white rounded">
+                            <h5 class="fw-bold mb-3">Danh Sách Tài Xế</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Mã TX</th><th>Họ Tên</th><th>Bằng Lái</th><th>SĐT</th><th class="text-center">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-body-tx"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -266,6 +376,7 @@
     <script src="{{ url_for('static', filename='js/benxe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tuyenxe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/xe.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nhansu.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

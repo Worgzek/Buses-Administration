@@ -17,22 +17,22 @@ INSERT INTO BEN_XE (MaBenXe, TenBenXe, DiaChi) VALUES
 ('BX_LVH', 'Làng Văn hóa các dân tộc VN', 'Sơn Tây, Hà Nội');
 
 
-INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai, NgaySinh) VALUES
-('TX01', 'Nguyễn Văn Nam', '0901234567', 'Hạng E', '1980-01-15'),
-('TX02', 'Trần Hoài Bảo', '0912233445', 'Hạng E', '1985-05-20'),
-('TX03', 'Lê Minh Tâm', '0988776655', 'Hạng D', '1988-11-30'),
-('TX04', 'Phạm Quốc Hùng', '0933445566', 'Hạng E', '1982-03-10'),
-('TX05', 'Vũ Đức Thịnh', '0944556677', 'Hạng E', '1979-07-25'),
-('TX06', 'Ngô Thanh Sơn', '0955667788', 'Hạng D', '1990-09-12'),
-('TX07', 'Đặng Văn Lâm', '0966778899', 'Hạng E', '1984-12-05'),
-('TX08', 'Bùi Xuân Huấn', '0977889900', 'Hạng E', '1987-02-18'),
-('TX09', 'Trịnh Đình Quang', '0909090901', 'Hạng D', '1986-06-22'),
-('TX10', 'Hoàng Văn Thái', '0919191910', 'Hạng E', '1983-04-14'),
-('TX11', 'Lý Hải', '0929292920', 'Hạng E', '1981-08-08'),
-('TX12', 'Phan Mạnh Quỳnh', '0939393930', 'Hạng D', '1992-10-10'),
-('TX13', 'Sơn Tùng', '0949494940', 'Hạng E', '1994-07-05'),
-('TX14', 'Đen Vâu', '0959595950', 'Hạng E', '1989-05-13'),
-('TX15', 'Jack 5tr', '0969696960', 'Hạng D', '1997-04-12');
+INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai) VALUES
+('TX01', 'Nguyễn Văn Nam', '0901234567', 'Hạng E'),
+('TX02', 'Trần Hoài Bảo', '0912233445', 'Hạng E'),
+('TX03', 'Lê Minh Tâm', '0988776655', 'Hạng D'),
+('TX04', 'Phạm Quốc Hùng', '0933445566', 'Hạng E'),
+('TX05', 'Vũ Đức Thịnh', '0944556677', 'Hạng E'),
+('TX06', 'Ngô Thanh Sơn', '0955667788', 'Hạng D'),
+('TX07', 'Đặng Văn Lâm', '0966778899', 'Hạng E'),
+('TX08', 'Bùi Xuân Huấn', '0977889900', 'Hạng E'),
+('TX09', 'Trịnh Đình Quang', '0909090901', 'Hạng D'),
+('TX10', 'Hoàng Văn Thái', '0919191910', 'Hạng E'),
+('TX11', 'Lý Hải', '0929292920', 'Hạng E'),
+('TX12', 'Phan Mạnh Quỳnh', '0939393930', 'Hạng D'),
+('TX13', 'Sơn Tùng', '0949494940', 'Hạng E'),
+('TX14', 'Đen Vâu', '0959595950', 'Hạng E'),
+('TX15', 'Jack 5tr', '0969696960', 'Hạng D');
 
 INSERT INTO HANH_KHACH (MaHanhKhach, TenHanhKhach, SoDienThoai) VALUES
 ('KH01', 'Võ Thị Ngọc Ngân', '0901111111'),
