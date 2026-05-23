@@ -22,7 +22,7 @@ function loadXeBus() {
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="align-middle"><span class="fw-bold">${ma}</span></td>
+                    <td class="align-middle"><span class="fw-bold text-primary">${ma}</span></td>
                     <td class="align-middle"><span class="badge bg-dark px-2">${bienSo}</span></td>
                     <td class="align-middle">${soCho} chỗ</td>
 
