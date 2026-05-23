@@ -246,3 +246,61 @@ def update_xe(ma, bien, cho, tuyen, trang_thai):
             conn.commit()
     finally:
         conn.close()
+
+#-----Nhan Vien & Tai xe
+
+def get_all_nhan_vien():
+    query = "SELECT MaNhanVien, TenNhanVien, SoDienThoai, ChucVu, MaBenXe FROM NHAN_VIEN"
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+def add_nhan_vien(ma, ten, sdt, chucvu, maben):
+    query = '''
+            INSERT INTO NHAN_VIEN (MaNhanVien, TenNhanVien, SoDienThoai, ChucVu, MaBenXe) 
+            VALUES 
+            (%s, %s, %s, %s, %s)
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma, ten, sdt, chucvu, maben))
+            conn.commit()
+    finally:
+        conn.close()
+
+def get_all_tai_xe():
+    query = '''
+                SELECT 
+                MaTaiXe
+                ,TenTaiXe
+                ,SoDienThoai
+                ,BangLai
+                ,NgaySinh 
+                FROM TAI_XE
+                '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+def add_tai_xe(ma, ten, sdt, banglai, ngaysinh):
+    query = '''
+                INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai, NgaySinh) 
+                VALUES 
+                (%s, %s, %s, %s, %s)
+                '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma, ten, sdt, banglai, ngaysinh))
+            conn.commit()
+    finally:
+        conn.close()

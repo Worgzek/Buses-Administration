@@ -155,6 +155,60 @@ def edit_xe_route(ma):
     except Exception as e:
         return jsonify({"status": "error", "message": f"Lỗi server: {str(e)}"}), 500
   
+#---Nhan vien &ttai xe
+
+@app.route('/api/nhanvien', methods=['GET'])
+def get_nhan_vien():
+    try:
+        data = db.get_all_nhan_vien()
+        result = []
+        for row in data:
+            result.append({
+                "Ma": row[0],
+                "Ten": row[1],
+                "SDT": row[2],
+                "ChucVu": row[3],
+                "MaBen": row[4]
+            })
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/nhanvien', methods=['POST'])
+def post_nhan_vien():
+    req = request.json
+    try:
+        db.add_nhan_vien(req['ma'], req['ten'], req['sdt'], req['chucvu'], req['maben'])
+        return jsonify({"message": "Thêm nhân viên thành công!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/taixe', methods=['GET'])
+def get_tai_xe():
+    try:
+        data = db.get_all_tai_xe()
+        result = []
+        for row in data:
+            result.append({
+                "Ma": row[0],
+                "Ten": row[1],
+                "SDT": row[2],
+                "BangLai": row[3],
+                "NgaySinh": str(row[4])
+            })
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/taixe', methods=['POST'])
+def post_tai_xe():
+    req = request.json
+    try:
+        db.add_tai_xe(req['ma'], req['ten'], req['sdt'], req['banglai'], req['ngaysinh'])
+        return jsonify({"message": "Thêm tài xế thành công!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
-

@@ -23,7 +23,7 @@ CREATE TABLE TUYEN_XE (
     TenTuyen VARCHAR(100) NOT NULL,
     MaBXdau VARCHAR(20) REFERENCES BEN_XE(MaBenXe),
     MaBXcuoi VARCHAR(20) REFERENCES BEN_XE(MaBenXe),
-    GiaVe DECIMAL(12, 2)
+    GiaVe DECIMAL(12, 2) CHECK (GiaVe > 0)
 );
 
 CREATE TABLE XE_BUS (
@@ -51,13 +51,11 @@ CREATE TABLE CHUYEN_XE (
     MaTaiXe VARCHAR(10) REFERENCES TAI_XE(MaTaiXe),
     TrangThai VARCHAR(50) DEFAULT 'Sắp chạy' CHECK (TrangThai IN ('Sắp chạy', 'Đang chạy', 'Hoàn thành', 'Hủy'))
 );
--- 8. Vé
+
 CREATE TABLE VE (
     MaVe VARCHAR(10) PRIMARY KEY,
-    SoGhe INTEGER NOT NULL CHECK (SoGhe > 0),
-    GiaVe_ThucTe DECIMAL(12, 2),
+    GiaVe DECIMAL(12, 2) CHECK (GiaVe > 0),
     NgayDat DATE DEFAULT CURRENT_DATE,
     MaChuyen VARCHAR(10) REFERENCES CHUYEN_XE(MaChuyen),
-    MaHanhKhach VARCHAR(10) REFERENCES HANH_KHACH(MaHanhKhach),
-    MaNhanVien VARCHAR(10) REFERENCES NHAN_VIEN(MaNhanVien)
+    MaHanhKhach VARCHAR(10) REFERENCES HANH_KHACH(MaHanhKhach)
 );
