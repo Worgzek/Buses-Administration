@@ -250,7 +250,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-2">
                                         <label class="form-label small fw-bold">Mã TX</label>
-                                        <input type="text" id="tx-ma" class="form-control" placeholder="TX01">
+                                        <input type="text" id="tx-matx" class="form-control" placeholder="TX01">
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small fw-bold">Họ Tên</label>
@@ -258,7 +258,12 @@
                                     </div>
                                     <div class="col-md-2">
                                         <label class="form-label small fw-bold">Bằng Lái</label>
-                                        <input type="text" id="tx-bang" class="form-control" placeholder="Hạng E">
+                                        <select id="tx-bang" class="form-select">
+                                            <option value="">-- Chọn hạng --</option>
+                                            <option value="Hạng E">Hạng E</option>
+                                            <option value="Hạng FD">Hạng FD</option>
+                                            <option value="Hạng FE">Hạng FE</option>
+                                        </select>
                                     </div>
                                     <div class="col-md-3">
                                         <label class="form-label small fw-bold">Số điện thoại</label>
@@ -277,7 +282,7 @@
                                 <table class="table table-hover align-middle">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Mã TX</th><th>Họ Tên</th><th>Bằng Lái</th><th>SĐT</th><th class="text-center">Hành động</th>
+                                            <th>Mã TX</th><th>Họ Tên</th><th>Bằng Lái</th><th>SĐT</th><th>Trạng Thái</th><th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody id="table-body-tx"></tbody>

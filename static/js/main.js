@@ -31,6 +31,8 @@ function showSection(sectionId) {
         document.getElementById('main-title').innerText = "Quản lý Nhân sự"; // Đã sửa tiêu đề
         if (typeof loadNhanVien === 'function') loadNhanVien();
         if (typeof loadTaiXe === 'function') loadTaiXe();
+        if (typeof loadBenXeSelect === 'function') loadBenXeSelect();
+        
     }
 
     document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));

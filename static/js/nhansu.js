@@ -1,5 +1,33 @@
-// 1. Load Nhân Viên (Mã, Họ tên, Chức vụ, SĐT, Bến)
-// 1. Load Nhân Viên
+function loadBenXeSelect() {
+    const selectBen = document.getElementById('nv-benxe');
+    if (!selectBen) return;
+
+    fetch('/api/stations')
+        .then(res => res.json())
+        .then(data => {
+            selectBen.innerHTML = '<option value="">-- Chọn bến xe đảm nhận --</option>';
+            
+            data.forEach(ben => {
+                let ma, ten;
+                                if (Array.isArray(ben)) {
+                    ma = ben[0];
+                    ten = ben[1];
+                } 
+                else {
+                    ma = ben.Ma || ben.MaBen || ben.ma;
+                    ten = ben.Ten || ben.TenBen || ben.ten;
+                }
+
+                if (ma && ten) {
+                    const option = document.createElement('option');
+                    option.value = ma;
+                    option.textContent = ten;
+                    selectBen.appendChild(option);
+                }
+            });
+        })
+        .catch(err => console.error("Lỗi khi load bến xe vào select:", err));
+}
 function loadNhanVien() {
     const tbody = document.getElementById('table-body-nv');
     if (!tbody) return;
@@ -21,7 +49,7 @@ function loadNhanVien() {
                     <td><span class="fw-bold text-primary">${ma}</span></td>
                     <td>${ten}</td>
                     <td><span class="badge bg-info text-dark">${chucVu}</span></td>
-                    <td>${sdt}</td>
+                    <td><i class="fas fa-phone-alt me-2 text-secondary small"></i>${sdt}</td>
                     <td>${maBen}</td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-light text-primary me-1" onclick="editNhanVien('${ma}')"><i class="fas fa-edit"></i></button>
@@ -34,7 +62,6 @@ function loadNhanVien() {
         .catch(err => console.error('Lỗi load nhân viên:', err));
 }
 
-// 2. Load Tài Xế
 function loadTaiXe() {
     const tbody = document.getElementById('table-body-tx');
     if (!tbody) return;
@@ -44,59 +71,168 @@ function loadTaiXe() {
         .then(data => {
             tbody.innerHTML = '';
             data.forEach(tx => {
-                // SỬA TẠI ĐÂY: Dùng tên Key khớp với ảnh Console
-                const ma = tx.Ma || 'N/A';
-                const ten = tx.Ten || 'N/A';
-                const bangLai = tx.BangLai || 'N/A';
-                const sdt = tx.SDT || 'N/A';
+                const ma = tx.Ma || tx[0] || 'N/A';
+                const ten = tx.Ten || tx[1] || 'N/A';
+                const sdt = tx.SDT || tx[2] || 'N/A';
+                const bangLai = tx.BangLai || tx[3] || 'N/A';
+                const trangThai = tx.TrangThai || tx[4] || 'Sẵn sàng';
+
+                let statusClass = '';
+                if (trangThai.includes('chạy')) {
+                    statusClass = 'bg-warning-subtle text-warning'; // Màu vàng nhạt
+                } else if (trangThai === 'Sẵn sàng') {
+                    statusClass = 'bg-success-subtle text-success'; // Màu xanh nhạt
+                } else if (trangThai === 'Nghỉ') {
+                    statusClass = 'bg-danger-subtle text-danger';   // Màu đỏ nhạt
+                } else {
+                    statusClass = 'bg-secondary-subtle text-secondary'; // Màu xám nhạt
+                }
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><span class="fw-bold text-success">${ma}</span></td>
-                    <td>${ten}</td>
-                    <td><span class="badge bg-dark">${bangLai}</span></td>
-                    <td>${sdt}</td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-light text-primary me-1" onclick="editTaiXe('${ma}')"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-light text-danger" onclick="deleteTaiXe('${ma}')"><i class="fas fa-trash"></i></button>
+                    <td class="align-middle">
+                        <span class="fw-bold text-primary">${ma}</span>
+                    </td>
+                    <td class="align-middle">${ten}</td>
+                    <td class="align-middle">
+                        <span class="badge bg-dark px-2">${bangLai}</span>
+                    </td>
+                    <td class="align-middle">
+                        <i class="fas fa-phone-alt me-2 text-secondary small"></i>
+                        <span>${sdt}</span>
+                    </td>
+                    <td class="align-middle">
+                        <span class="badge ${statusClass} px-3">${trangThai}</span>
+                    </td>
+                    <td class="text-center align-middle">
+                        <button class="btn btn-sm btn-light text-primary me-2" onclick="editTaiXe('${ma}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-light text-danger" onclick="deleteTaiXe('${ma}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(row);
             });
         })
-        .catch(err => console.error('Lỗi load tài xế:', err));
+        .catch(err => {
+            console.error('Lỗi load tài xế:', err);
+        });
 }
-// 3. Xử lý thêm Nhân Viên
+
 async function handleAddNhanVien() {
-    const data = {
-        ma: document.getElementById('nv-ma').value,
-        ten: document.getElementById('nv-ten').value,
-        chucvu: document.getElementById('nv-chucvu').value,
-        sdt: document.getElementById('nv-sdt').value,
-        ben: document.getElementById('nv-benxe').value
+    // Lấy dữ liệu từ HTML
+    const ma = document.getElementById('nv-ma').value.trim();
+    const ten = document.getElementById('nv-ten').value.trim();
+    const chucvu = document.getElementById('nv-chucvu').value;
+    const sdt = document.getElementById('nv-sdt').value.trim();
+    const maben = document.getElementById('nv-benxe').value;
+
+    if (!ma || !ten) {
+        alert("Vui lòng nhập Mã và Tên!");
+        return;
+    }
+
+    // PAYLOAD NÀY PHẢI KHỚP VỚI PYTHON req['ma'], req['ten']...
+    const payload = {
+        ma: ma,
+        ten: ten,
+        sdt: sdt,
+        chucvu: chucvu,
+        maben: maben
     };
 
-    const res = await fetch('/api/nhanvien', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-    if (res.ok) { loadNhanVien(); }
+    try {
+        const response = await fetch('/api/nhanvien', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+            loadNhanVien(); 
+            // Xóa form
+            document.getElementById('nv-ma').value = '';
+            document.getElementById('nv-ten').value = '';
+            document.getElementById('nv-sdt').value = '';
+        } else {
+            // Hiển thị lỗi cụ thể từ Python trả về (Exception e)
+            alert("Lỗi: " + (result.error || "Không xác định"));
+        }
+    } catch (error) {
+        console.error("Lỗi:", error);
+    }
+}
+// Thêm Tài Xế
+async function handleAddTaiXe() {
+    // 1. Lấy giá trị từ HTML (Hãy đảm bảo ID 'tx-matx' khớp với file index.html của ông)
+    const ma = document.getElementById('tx-matx').value.trim();
+    const ten = document.getElementById('tx-ten').value.trim();
+    const sdt = document.getElementById('tx-sdt').value.trim();
+    const bang = document.getElementById('tx-bang').value; 
+    
+    // Nếu ông có thêm ô select trạng thái thì lấy, không thì mặc định là 'Sẵn sàng'
+    const trangthai = document.getElementById('tx-trangthai')?.value || "Sẵn sàng";
+
+    // 2. Kiểm tra nhập liệu
+    if (!ma || !ten || !sdt || !bang) {
+        alert("Vui lòng nhập đủ Mã, Tên, SĐT và CHỌN HẠNG BẰNG!");
+        return;
+    }
+
+    // 3. Payload gửi lên phải khớp với req['...'] bên Python
+    const payload = {
+        ma: ma,
+        ten: ten,
+        sdt: sdt,
+        banglai: bang,
+        trangthai: trangthai // Thêm cột mới này vào
+    };
+
+    console.log("Đang gửi dữ liệu:", payload);
+
+    try {
+        const response = await fetch('/api/taixe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert("Thêm tài xế thành công!");
+            if (typeof loadTaiXe === 'function') loadTaiXe();
+            
+            // 4. Reset form
+            document.getElementById('tx-matx').value = '';
+            document.getElementById('tx-ten').value = '';
+            document.getElementById('tx-sdt').value = '';
+            document.getElementById('tx-bang').value = ''; 
+            if (document.getElementById('tx-trangthai')) {
+                document.getElementById('tx-trangthai').value = 'Sẵn sàng';
+            }
+        } else {
+            // Hiển thị lỗi cụ thể từ Database gửi về
+            alert("Lỗi: " + (result.error || "Không thể thêm tài xế"));
+        }
+    } catch (error) {
+        console.error("Lỗi kết nối API:", error);
+        alert("Không thể kết nối tới server!");
+    }
 }
 
-// 4. Xử lý thêm Tài Xế
-async function handleAddTaiXe() {
-    const data = {
-        ma: document.getElementById('tx-ma').value,
-        ten: document.getElementById('tx-ten').value,
-        bang: document.getElementById('tx-bang').value,
-        sdt: document.getElementById('tx-sdt').value
-    };
+async function deleteNhanVien(ma) {
+    if (!confirm(`Xóa nhân viên ${ma}?`)) return;
 
-    const res = await fetch('/api/taixe', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    });
-    if (res.ok) { loadTaiXe(); }
+    const res = await fetch(`/api/nhanvien/${ma}`, { method: 'DELETE' });
+    if (res.ok) {
+        loadNhanVien(); // Load lại bảng là xong
+    } else {
+        alert("Lỗi xóa nhân viên!");
+    }
 }

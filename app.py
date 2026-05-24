@@ -203,11 +203,17 @@ def get_tai_xe():
 def post_tai_xe():
     req = request.json
     try:
-        db.add_tai_xe(req['ma'], req['ten'], req['sdt'], req['banglai'])
+        db.add_tai_xe(req['ma'], req['ten'], req['sdt'], req['banglai'], req['trangthai'])
         return jsonify({"message": "Thêm tài xế thành công!"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/nhanvien/<ma>', methods=['DELETE'])
+def xoa_nv(ma):
+    db.delete_nv(ma)
+    return jsonify({"status": "success", "message": f"Đã xóa {ma} thành công!"}), 200
 
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
+

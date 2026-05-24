@@ -290,16 +290,29 @@ def get_all_tai_xe():
     finally:
         conn.close()
 
-def add_tai_xe(ma, ten, sdt, banglai):
+def add_tai_xe(ma, ten, sdt, banglai, trangthai):
     query = '''
-                INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai) 
+                INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai, TrangThai) 
                 VALUES 
                 (%s, %s, %s, %s, %s)
                 '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute(query, (ma, ten, sdt, banglai))
+            cur.execute(query, (ma, ten, sdt, banglai, trangthai))
+            conn.commit()
+    finally:
+        conn.close()
+
+def delete_nv(ma):
+    query ='''
+                Delete from NHAN_VIEN
+                where MaNhanVien = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma,))
             conn.commit()
     finally:
         conn.close()

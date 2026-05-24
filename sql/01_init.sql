@@ -8,7 +8,9 @@ CREATE TABLE TAI_XE (
     MaTaiXe VARCHAR(10) PRIMARY KEY,
     TenTaiXe VARCHAR(100) NOT NULL,
     SoDienThoai VARCHAR(15),
-    BangLai VARCHAR(50)
+    BangLai VARCHAR(50) DEFAULT 'Hạng E',
+    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng'
+
 );
 
 CREATE TABLE HANH_KHACH (
