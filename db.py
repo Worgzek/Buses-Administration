@@ -280,7 +280,6 @@ def get_all_tai_xe():
                 ,TenTaiXe
                 ,SoDienThoai
                 ,BangLai
-                ,NgaySinh 
                 FROM TAI_XE
                 '''
     conn = get_db_connection()
@@ -291,16 +290,16 @@ def get_all_tai_xe():
     finally:
         conn.close()
 
-def add_tai_xe(ma, ten, sdt, banglai, ngaysinh):
+def add_tai_xe(ma, ten, sdt, banglai):
     query = '''
-                INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai, NgaySinh) 
+                INSERT INTO TAI_XE (MaTaiXe, TenTaiXe, SoDienThoai, BangLai) 
                 VALUES 
                 (%s, %s, %s, %s, %s)
                 '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute(query, (ma, ten, sdt, banglai, ngaysinh))
+            cur.execute(query, (ma, ten, sdt, banglai))
             conn.commit()
     finally:
         conn.close()

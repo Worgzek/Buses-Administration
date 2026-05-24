@@ -193,8 +193,7 @@ def get_tai_xe():
                 "Ma": row[0],
                 "Ten": row[1],
                 "SDT": row[2],
-                "BangLai": row[3],
-                "NgaySinh": str(row[4])
+                "BangLai": row[3]
             })
         return jsonify(result)
     except Exception as e:
@@ -204,7 +203,7 @@ def get_tai_xe():
 def post_tai_xe():
     req = request.json
     try:
-        db.add_tai_xe(req['ma'], req['ten'], req['sdt'], req['banglai'], req['ngaysinh'])
+        db.add_tai_xe(req['ma'], req['ten'], req['sdt'], req['banglai'])
         return jsonify({"message": "Thêm tài xế thành công!"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
