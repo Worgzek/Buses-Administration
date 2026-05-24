@@ -191,7 +191,8 @@ def add_xe(ma, bien, cho, tuyen):
 
     query = '''
             INSERT INTO xe_bus (MaXe, BienSo, SoCho, TrangThai, MaTuyen)
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES 
+            (%s, %s, %s, %s, %s)
             '''
     conn = get_db_connection()
     try:
@@ -236,7 +237,10 @@ def get_one_xe(ma):
 def update_xe(ma, bien, cho, tuyen, trang_thai):
     query = '''
             UPDATE XE_BUS 
-            SET BienSo = %s, SoCho = %s, MaTuyen = %s, TrangThai = %s
+            SET BienSo = %s
+            ,SoCho = %s
+            ,MaTuyen = %s
+            ,TrangThai = %s
             WHERE MaXe = %s
             '''
     conn = get_db_connection()
@@ -250,7 +254,15 @@ def update_xe(ma, bien, cho, tuyen, trang_thai):
 #-----Nhan Vien & Tai xe
 
 def get_all_nhan_vien():
-    query = "SELECT MaNhanVien, TenNhanVien, SoDienThoai, ChucVu, MaBenXe FROM NHAN_VIEN"
+    query = '''SELECT 
+                MaNhanVien
+                ,TenNhanVien
+                ,SoDienThoai
+                ,ChucVu
+                ,MaBenXe 
+                FROM NHAN_VIEN
+                ORDER BY MaNhanVien ASC
+                '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
@@ -261,7 +273,8 @@ def get_all_nhan_vien():
 
 def add_nhan_vien(ma, ten, sdt, chucvu, maben):
     query = '''
-            INSERT INTO NHAN_VIEN (MaNhanVien, TenNhanVien, SoDienThoai, ChucVu, MaBenXe) 
+            INSERT INTO NHAN_VIEN 
+            (MaNhanVien, TenNhanVien, SoDienThoai, ChucVu, MaBenXe) 
             VALUES 
             (%s, %s, %s, %s, %s)
             '''
@@ -370,3 +383,47 @@ def update_tai_xe(ma, ten, sdt, banglai, trangthai):
         cur.execute(query, (ten, sdt, banglai, trangthai, ma))
         conn.commit()
     conn.close()
+
+def get_nv_by_id(ma):
+    query = '''
+                SELECT 
+                MaNhanVien
+                ,TenNhanVien
+                ,SoDienThoai
+                ,ChucVu 
+                ,MaBenXe
+                FROM NHAN_VIEN WHERE MaNhanVien = %s
+                '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma,))
+            r = cur.fetchone()
+            if r:
+                return {
+                    "Ma": r[0],
+                    "Ten": r[1],
+                    "SoDienThoai": r[2],
+                    "ChucVu": r[3],
+                    "MaBenXe": r[4]
+                }
+            return None
+    finally:
+        conn.close()
+
+def update_nv(ma, ten, sdt, chucvu, maben):
+    query = '''
+            UPDATE NHAN_VIEN
+            SET TenNhanVien = %s
+            ,SoDienThoai = %s
+            ,ChucVu = %s
+            ,MaBenXe = %s
+            WHERE MaNhanVien = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ten,sdt,chucvu,maben,ma))
+            conn.commit()
+    finally:
+        conn.close()

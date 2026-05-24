@@ -28,6 +28,7 @@ function loadBenXeSelect() {
         })
         .catch(err => console.error("Lỗi khi load bến xe vào select:", err));
 }
+
 function loadNhanVien() {
     const tbody = document.getElementById('table-body-nv');
     if (!tbody) return;
@@ -37,7 +38,6 @@ function loadNhanVien() {
         .then(data => {
             tbody.innerHTML = '';
             data.forEach(nv => {
-                // SỬA TẠI ĐÂY: Dùng tên Key chính xác từ ảnh Console của ông
                 const ma = nv.Ma || 'N/A';
                 const ten = nv.Ten || 'N/A';
                 const chucVu = nv.ChucVu || 'N/A';
@@ -289,7 +289,6 @@ async function editTaiXe(ma) {
 async function submitEditTaiXe() {
     const ma = document.getElementById('edit-tx-ma').value;
     
-    // Gom đủ bộ tứ "Full Combo" mà Backend yêu cầu
     const payload = {
         ten: document.getElementById('edit-tx-ten').value.trim(),
         sdt: document.getElementById('edit-tx-sdt').value.trim(),
@@ -328,5 +327,84 @@ async function submitEditTaiXe() {
         }
     } catch (e) {
         alert("Lỗi kết nối server!");
+    }
+}
+
+// Hàm fetch bến xe từ API có sẵn của ông
+async function fillStationsToSelect() {
+    try {
+        const res = await fetch('/api/stations');
+        const stations = await res.json();
+        
+        const selectMaben = document.getElementById('edit-nv-maben');
+        if (!selectMaben) return;
+
+        // Xóa sạch option cũ, chỉ để lại cái mặc định
+        selectMaben.innerHTML = '<option value="">-- Chọn bến xe --</option>';
+
+        stations.forEach(st => {
+            const option = document.createElement('option');
+
+            option.value = st.Ma || st.MaBenXe || st[0]; 
+            option.textContent = st.Ten || st.TenBenXe || st[1];
+            selectMaben.appendChild(option);
+        });
+    } catch (e) {
+        console.error("Lỗi load stations:", e);
+    }
+}
+
+async function editNhanVien(ma) {
+    try {
+        await fillStationsToSelect();
+
+        const res = await fetch(`/api/nhanvien/${ma}`);
+        const nv = await res.json();
+
+        if (res.ok) {
+            document.getElementById('display-ma-nv').innerText = ma;
+            document.getElementById('edit-nv-ma').value = ma;
+            document.getElementById('edit-nv-ten').value = (nv.Ten || '').trim();
+            document.getElementById('edit-nv-sdt').value = (nv.SoDienThoai || '').trim();
+            document.getElementById('edit-nv-chucvu').value = nv.ChucVu;
+            document.getElementById('edit-nv-maben').value = nv.MaBenXe;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editNhanVienModal'));
+            editModal.show();
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function submitEditNhanVien() {    
+    const ma = document.getElementById('edit-nv-ma').value;
+    console.log("Mã nhân viên đang sửa:", ma);
+    
+    const payload = {
+        ten: document.getElementById('edit-nv-ten').value,
+        sdt: document.getElementById('edit-nv-sdt').value,
+        chucvu: document.getElementById('edit-nv-chucvu').value,
+        maben: document.getElementById('edit-nv-maben').value
+    };
+    
+    console.log("Payload gửi đi:", payload);
+
+    try {
+        const res = await fetch(`/api/nhanvien/${ma}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("Cập nhật thành công!");
+            bootstrap.Modal.getInstance(document.getElementById('editNhanVienModal')).hide();
+            loadNhanVien();
+        } else {
+            const err = await res.json();
+            alert("Lỗi từ server: " + JSON.stringify(err));
+        }
+    } catch (e) {
+        console.error("Lỗi:", e);
+        alert("Lỗi mạng, kiểm tra console F12!");
     }
 }

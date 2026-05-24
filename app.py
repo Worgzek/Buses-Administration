@@ -241,6 +241,24 @@ def update_taixe(ma):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+
+@app.route('/api/nhanvien/<ma>', methods=['GET'])
+def get_mot_nhanvien(ma):
+    data = db.get_nv_by_id(ma)
+    if data:
+        return jsonify(data), 200
+    return jsonify({"error": "Không tìm thấy"}), 404
+
+@app.route('/api/nhanvien/<ma>', methods=['PUT'])
+def update_nhanvien(ma):
+    req = request.json
+    try:
+        db.update_nv(ma, req['ten'], req['sdt'], req['chucvu'], req['maben'])
+        return jsonify({"message": "Cập nhật thành công!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

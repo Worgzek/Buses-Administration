@@ -209,8 +209,10 @@
                                     <div class="col-md-2">
                                         <label class="form-label small fw-bold">Chức Vụ</label>
                                         <select id="nv-chucvu" class="form-select">
-                                            <option value="Bán vé">Bán vé</option>
                                             <option value="Điều hành">Điều hành</option>
+                                            <option value="Quản lý">Quản lý</option>
+                                            <option value="Bán vé">Bán vé</option>
+                                            <option value="Bảo vệ">Bảo Vệ</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">
@@ -421,6 +423,49 @@
                         <button type="button" class="btn btn-primary px-4" onclick="submitEditTaiXe()">
                             <i class="fas fa-save me-2"></i>Lưu thay đổi
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editNhanVienModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div id="form-edit-nv" class="modal-content border-0 shadow"> <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Sửa nhân viên: <span id="display-ma-nv"></span></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-nv-ma">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Họ tên</label>
+                            <input type="text" id="edit-nv-ten" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Số điện thoại</label>
+                            <input type="text" id="edit-nv-sdt" class="form-control" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Chức vụ</label>
+                            <select id="edit-nv-chucvu" class="form-select">
+                                <option value="Điều hành">Điều hành</option>
+                                <option value="Quản lý">Quản lý</option>
+                                <option value="Bán vé">Bán vé</option>
+                                <option value="Bảo vệ">Bảo Vệ</option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bến xe quản lý</label>
+                            <select id="edit-nv-maben" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="submitEditNhanVien()">Lưu thay đổi</button>                    
                     </div>
                 </div>
             </div>
