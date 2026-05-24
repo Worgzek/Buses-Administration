@@ -77,6 +77,7 @@ function loadTaiXe() {
                 const bangLai = tx.BangLai || tx[3] || 'N/A';
                 const trangThai = tx.TrangThai || tx[4] || 'Sẵn sàng';
 
+
                 let statusClass = '';
                 if (trangThai.includes('chạy')) {
                     statusClass = 'bg-warning-subtle text-warning'; // Màu vàng nhạt
@@ -246,5 +247,86 @@ async function deleteTaiXe(ma) {
     } catch (error) {
         console.error("Lỗi khi xóa:", error);
         alert("Không thể kết nối đến server để xóa tài xế!");
+    }
+}
+
+async function editTaiXe(ma) {
+    try {
+        const res = await fetch(`/api/taixe/${ma}`);
+        const tx = await res.json();
+
+        if (res.ok) {
+            document.getElementById('display-ma-tx').innerText = ma;
+            document.getElementById('edit-tx-ma').value = ma;
+            document.getElementById('edit-tx-ten').value = tx.Ten || tx[1];
+            document.getElementById('edit-tx-sdt').value = tx.SDT || tx[2];
+            document.getElementById('edit-tx-bang').value = tx.BangLai || tx[3];
+
+            // Xử lý đổ Option cho Trạng thái
+            const statusSelect = document.getElementById('edit-tx-trangthai');
+            const currentStatus = tx.TrangThai || tx[4];
+            
+            let options = `<option value="${currentStatus}" selected>${currentStatus} (Hiện tại)</option>`;
+            
+            // Nếu trạng thái hiện tại chưa phải là "Nghỉ", thì mới thêm option "Nghỉ"
+            if (currentStatus !== "Nghỉ") {
+                options += `<option value="Nghỉ">Nghỉ</option>`;
+            } else {
+                // Nếu đang "Nghỉ", có thể cho họ quay lại "Sẵn sàng" để hệ thống tính tiếp
+                options += `<option value="Sẵn sàng">Kích hoạt lại (Sẵn sàng)</option>`;
+            }
+            
+            statusSelect.innerHTML = options;
+
+            const editModal = new bootstrap.Modal(document.getElementById('editTaiXeModal'));
+            editModal.show();
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function submitEditTaiXe() {
+    const ma = document.getElementById('edit-tx-ma').value;
+    
+    // Gom đủ bộ tứ "Full Combo" mà Backend yêu cầu
+    const payload = {
+        ten: document.getElementById('edit-tx-ten').value.trim(),
+        sdt: document.getElementById('edit-tx-sdt').value.trim(),
+        banglai: document.getElementById('edit-tx-bang').value,
+        trangthai: document.getElementById('edit-tx-trangthai').value
+    };
+
+    // Kiểm tra nhanh ở Frontend trước khi gửi
+    if (!payload.ten || !payload.sdt || !payload.banglai || !payload.trangthai) {
+        alert("Vui lòng nhập đầy đủ thông tin: Tên, SĐT, Bằng lái và Trạng thái!");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/taixe/${ma}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+            alert("Cập nhật thành công!");
+            
+            // Đóng modal sau khi xong
+            const modalElem = document.getElementById('editTaiXeModal');
+            const modal = bootstrap.Modal.getInstance(modalElem);
+            modal.hide();
+
+            // Load lại bảng để thấy dữ liệu mới ngay lập tức
+            loadTaiXe(); 
+        } else {
+            // Hiển thị lỗi từ Backend (Ví dụ: "Thiếu thông tin: ten")
+            alert("Lỗi: " + (result.error || "Không thể cập nhật"));
+        }
+    } catch (e) {
+        alert("Lỗi kết nối server!");
     }
 }

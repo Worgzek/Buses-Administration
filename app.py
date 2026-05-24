@@ -193,7 +193,9 @@ def get_tai_xe():
                 "Ma": row[0],
                 "Ten": row[1],
                 "SDT": row[2],
-                "BangLai": row[3]
+                "BangLai": row[3],
+                "TrangThai": row[4]
+
             })
         return jsonify(result)
     except Exception as e:
@@ -222,6 +224,22 @@ def delete_tx(ma):
         if "foreign key" in str(e).lower():
             return jsonify({"error": "Không thể xóa! Tài xế này đang có chuyến"}), 400
         return jsonify({"status": "error", "message": str(e)}), 500
+    
+@app.route('/api/taixe/<ma>', methods=['GET'])
+def get_mot_taixe(ma):
+    data = db.get_tx_by_id(ma)
+    if data:
+        return jsonify(data), 200
+    return jsonify({"error": "Không tìm thấy"}), 404
+
+@app.route('/api/taixe/<ma>', methods=['PUT'])
+def update_taixe(ma):
+    req = request.json
+    try:
+        db.update_tai_xe(ma, req['ten'], req['sdt'], req['banglai'], req['trangthai'])
+        return jsonify({"message": "Cập nhật thành công!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)

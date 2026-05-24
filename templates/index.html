@@ -376,7 +376,55 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="editTaiXeModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-user-edit me-2"></i>Cập nhật Tài xế: <span id="display-ma-tx" class="fw-bold"></span>
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-tx-ma">
 
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Họ và Tên</label>
+                            <input type="text" id="edit-tx-ten" class="form-control" placeholder="Ví dụ: Nguyễn Văn A">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Số điện thoại</label>
+                            <input type="text" id="edit-tx-sdt" class="form-control" placeholder="Ví dụ: 0905123456">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Hạng bằng lái</label>
+                            <select id="edit-tx-bang" class="form-select">
+                                <option value="Hạng E">Hạng E (Tiêu chuẩn)</option>
+                                <option value="Hạng FC">Hạng FC</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Trạng thái làm việc</label>
+                            <select id="edit-tx-trangthai" class="form-select">
+                                </select>
+                            <div class="form-text mt-1 text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Chỉ có thể chuyển sang trạng thái "Nghỉ" hoặc giữ nguyên trạng thái vận hành.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary px-4" onclick="submitEditTaiXe()">
+                            <i class="fas fa-save me-2"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/benxe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/tuyenxe.js') }}"></script>

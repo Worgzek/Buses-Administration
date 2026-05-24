@@ -280,7 +280,9 @@ def get_all_tai_xe():
                 ,TenTaiXe
                 ,SoDienThoai
                 ,BangLai
+                ,TrangThai
                 FROM TAI_XE
+                order by MaTaiXe ASC
                 '''
     conn = get_db_connection()
     try:
@@ -329,3 +331,42 @@ def delete_tx(ma):
             conn.commit()
     finally:
         conn.close()
+
+def get_tx_by_id(ma):
+    query ='''
+                SELECT MaTaiXe
+                ,TenTaiXe
+                ,SoDienThoai
+                ,BangLai
+                ,TrangThai 
+                FROM TAI_XE 
+                WHERE MaTaiXe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
+            row = cur.fetchone()
+            if row:
+                return {
+                    "Ma": row[0],
+                    "Ten": row[1],
+                    "SDT": row[2],
+                    "BangLai": row[3],
+                    "TrangThai": row[4]
+                }
+            return None
+    finally:
+        conn.close()
+
+def update_tai_xe(ma, ten, sdt, banglai, trangthai):
+    query = '''
+        UPDATE TAI_XE 
+        SET TenTaiXe = %s, SoDienThoai = %s, BangLai = %s, TrangThai = %s
+        WHERE MaTaiXe = %s
+    '''
+    conn = get_db_connection()
+    with conn.cursor() as cur:
+        cur.execute(query, (ten, sdt, banglai, trangthai, ma))
+        conn.commit()
+    conn.close()
