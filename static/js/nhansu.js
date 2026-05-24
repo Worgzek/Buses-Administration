@@ -122,7 +122,6 @@ function loadTaiXe() {
 }
 
 async function handleAddNhanVien() {
-    // Lấy dữ liệu từ HTML
     const ma = document.getElementById('nv-ma').value.trim();
     const ten = document.getElementById('nv-ten').value.trim();
     const chucvu = document.getElementById('nv-chucvu').value;
@@ -133,8 +132,6 @@ async function handleAddNhanVien() {
         alert("Vui lòng nhập Mã và Tên!");
         return;
     }
-
-    // PAYLOAD NÀY PHẢI KHỚP VỚI PYTHON req['ma'], req['ten']...
     const payload = {
         ma: ma,
         ten: ten,
@@ -155,42 +152,35 @@ async function handleAddNhanVien() {
         if (response.ok) {
             alert(result.message);
             loadNhanVien(); 
-            // Xóa form
             document.getElementById('nv-ma').value = '';
             document.getElementById('nv-ten').value = '';
             document.getElementById('nv-sdt').value = '';
         } else {
-            // Hiển thị lỗi cụ thể từ Python trả về (Exception e)
             alert("Lỗi: " + (result.error || "Không xác định"));
         }
     } catch (error) {
         console.error("Lỗi:", error);
     }
 }
-// Thêm Tài Xế
 async function handleAddTaiXe() {
-    // 1. Lấy giá trị từ HTML (Hãy đảm bảo ID 'tx-matx' khớp với file index.html của ông)
     const ma = document.getElementById('tx-matx').value.trim();
     const ten = document.getElementById('tx-ten').value.trim();
     const sdt = document.getElementById('tx-sdt').value.trim();
     const bang = document.getElementById('tx-bang').value; 
     
-    // Nếu ông có thêm ô select trạng thái thì lấy, không thì mặc định là 'Sẵn sàng'
     const trangthai = document.getElementById('tx-trangthai')?.value || "Sẵn sàng";
 
-    // 2. Kiểm tra nhập liệu
     if (!ma || !ten || !sdt || !bang) {
         alert("Vui lòng nhập đủ Mã, Tên, SĐT và CHỌN HẠNG BẰNG!");
         return;
     }
 
-    // 3. Payload gửi lên phải khớp với req['...'] bên Python
     const payload = {
         ma: ma,
         ten: ten,
         sdt: sdt,
         banglai: bang,
-        trangthai: trangthai // Thêm cột mới này vào
+        trangthai: trangthai
     };
 
     console.log("Đang gửi dữ liệu:", payload);
@@ -208,7 +198,6 @@ async function handleAddTaiXe() {
             alert("Thêm tài xế thành công!");
             if (typeof loadTaiXe === 'function') loadTaiXe();
             
-            // 4. Reset form
             document.getElementById('tx-matx').value = '';
             document.getElementById('tx-ten').value = '';
             document.getElementById('tx-sdt').value = '';
@@ -217,7 +206,6 @@ async function handleAddTaiXe() {
                 document.getElementById('tx-trangthai').value = 'Sẵn sàng';
             }
         } else {
-            // Hiển thị lỗi cụ thể từ Database gửi về
             alert("Lỗi: " + (result.error || "Không thể thêm tài xế"));
         }
     } catch (error) {
@@ -231,8 +219,32 @@ async function deleteNhanVien(ma) {
 
     const res = await fetch(`/api/nhanvien/${ma}`, { method: 'DELETE' });
     if (res.ok) {
-        loadNhanVien(); // Load lại bảng là xong
+        loadNhanVien();
     } else {
         alert("Lỗi xóa nhân viên!");
+    }
+}
+
+async function deleteTaiXe(ma) {
+    // 1. Hỏi xác nhận trước khi xóa (Cho chuyên nghiệp)
+    if (!confirm(`Bạn có chắc chắn muốn xóa tài xế có mã ${ma} không?`)) {
+        return;
+    }
+    try {
+        const response = await fetch(`/api/taixe/${ma}`, {
+            method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(result.message);
+            loadTaiXe(); 
+        } else {
+            alert("Lỗi: " + (result.error || result.message));
+        }
+    } catch (error) {
+        console.error("Lỗi khi xóa:", error);
+        alert("Không thể kết nối đến server để xóa tài xế!");
     }
 }

@@ -316,3 +316,16 @@ def delete_nv(ma):
             conn.commit()
     finally:
         conn.close()
+
+def delete_tx(ma):
+    query = '''
+                Delete from TAI_XE
+                where MaTaiXe = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
+            conn.commit()
+    finally:
+        conn.close()

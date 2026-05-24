@@ -213,6 +213,15 @@ def xoa_nv(ma):
     db.delete_nv(ma)
     return jsonify({"status": "success", "message": f"Đã xóa {ma} thành công!"}), 200
 
+@app.route('/api/taixe/<ma>', methods=['DELETE'])
+def delete_tx(ma):
+    try:
+        db.delete_tx(ma)
+        return jsonify({"status": "success", "message": f"Đã xóa tài xế {ma} thành công!"}), 200
+    except Exception as e:
+        if "foreign key" in str(e).lower():
+            return jsonify({"error": "Không thể xóa! Tài xế này đang có chuyến"}), 400
+        return jsonify({"status": "error", "message": str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
