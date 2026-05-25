@@ -16,7 +16,7 @@
         </div>
         <ul class="list-unstyled components">
             <li id="menu-chuyen" class="active" onclick="showSection('chuyen')">
-                <i class="fas fa-route-alt me-2"></i> Quản lý Chuyến Xe
+                <i class="fas fa-location-arrow me-2"></i> Quản lý Chuyến Xe
             </li>
             <li id="menu-benxe" class="active" onclick="showSection('benxe')">
                 <i class="fas fa-bus me-2"></i> Bến xe
@@ -58,15 +58,21 @@
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small fw-bold">Tuyến</label>
-                                <select id="cx-tuyen" class="form-select"></select>
+                                <select id="cx-tuyen" class="form-select">
+                                    <option value="">--Chọn Tuyến--</option></select>
+
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small fw-bold">Xe</label>
-                                <select id="cx-xe" class="form-select"></select>
+                                <select id="cx-xe" class="form-select">
+                                    <option value="">--Chọn Xe--</option></select>
+
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label small fw-bold">Tài xế</label>
-                                <select id="cx-taixe" class="form-select"></select>
+                                <select id="cx-taixe" class="form-select">
+                                    <option value="">--Chọn Tài Xế--</option></select>
+
                             </div>
                             <div class="col-md-2 d-flex align-items-end">
                                 <button class="btn btn-primary w-100" onclick="handleAddChuyen()">Thêm chuyến</button>
@@ -418,8 +424,7 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Tuyến đảm nhận</label>
-                            <select id="edit-xe-tuyen" class="form-select">
-                                </select>
+                            <select id="edit-xe-tuyen" class="form-select"></select>
                             <div id="edit-xe-status-preview" class="form-text mt-2">
                                 </div>
                         </div>
@@ -466,8 +471,7 @@
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Trạng thái làm việc</label>
-                            <select id="edit-tx-trangthai" class="form-select">
-                                </select>
+                            <select id="edit-tx-trangthai" class="form-select"></select>
                             <div class="form-text mt-1 text-muted">
                                 <i class="fas fa-info-circle me-1"></i>
                                 Chỉ có thể chuyển sang trạng thái "Nghỉ" hoặc giữ nguyên trạng thái vận hành.
@@ -522,6 +526,44 @@
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                         <button type="button" class="btn btn-primary px-4" onclick="submitEditNhanVien()">Lưu thay đổi</button>                    
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="editChuyenModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title">Sửa chuyến xe: <span id="display-ma-chuyen"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit-cx-ma">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Thời gian khởi hành</label>
+                            <input type="datetime-local" id="edit-cx-thoigian" class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tuyến</label>
+                            <select id="edit-cx-tuyen" class="form-select"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Xe</label>
+                            <select id="edit-cx-xe" class="form-select"></select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tài xế</label>
+                            <select id="edit-cx-taixe" class="form-select"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-warning px-4" onclick="submitEditChuyen()">Cập nhật</button>
                     </div>
                 </div>
             </div>

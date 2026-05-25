@@ -282,6 +282,20 @@ def post_chuyen():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/chuyen/<ma>', methods=['GET'])
+def get_mot_chuyen(ma):
+    chuyen = db.get_one_chuyen(ma)
+    return jsonify(chuyen)
+
+@app.route('/api/chuyen/<ma>', methods=['PUT'])
+def api_update_chuyen(ma):
+    req = request.json
+    try:
+        db.update_chuyen(ma, req['thoiGian'], req['maXe'], req['maTuyen'], req['maTaiXe'], req['trangThai'])
+        return jsonify({"message": "Cập nhật thành công!"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

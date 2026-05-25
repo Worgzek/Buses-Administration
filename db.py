@@ -479,3 +479,38 @@ def add_chuyen(ma, thoigian, tuyen, xe, taixe):
             conn.commit()
     finally:
         conn.close()
+
+def update_chuyen(ma, thoigian, xe, tuyen, taixe, trangthai):
+    query = '''
+        UPDATE CHUYEN_XE 
+        SET ThoiGianKhoiHanh=%s, MaXe=%s, MaTuyen=%s, MaTaiXe=%s, TrangThai=%s 
+        WHERE MaChuyen=%s
+    '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (thoigian, xe, tuyen, taixe, trangthai, ma))
+            conn.commit()
+    finally:
+        conn.close()
+
+def get_one_chuyen(ma):
+    query = '''
+            SELECT 
+                c.MaChuyen, 
+                TO_CHAR(ThoiGianKhoiHanh, 'YYYY-MM-DD HH24:MI:SS'),            
+                c.MaXe,
+                c.MaTuyen,
+                c.MaTaiXe,
+                c.TrangThai
+            FROM CHUYEN_XE c
+            WHERE MaChuyen = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma,))
+            row = cur.fetchone()
+            return row
+    finally:
+        conn.close()

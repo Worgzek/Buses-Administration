@@ -17,7 +17,7 @@ async function loadChuyenXe() {
             const tenTuyen = c[3];
             const trangThai = c[4] || 'Chưa cập nhật';
             
-            const time = thoiGian ? thoiGian.substring(0, 16) : 'N/A';
+            const time = thoiGian ? thoiGian.substring(0, 26) : 'N/A';
 
             let statusClass = '';
             if (trangThai.includes('Đang chạy') || trangThai.includes('Đang chạy')) statusClass = 'bg-warning-subtle text-warning';
@@ -48,6 +48,7 @@ async function loadChuyenXe() {
     }
 }
 
+// Sửa hàm initChuyenForm của ông thành:
 async function initChuyenForm() {
     try {
         const [resTuyen, resXe, resTaiXe] = await Promise.all([
@@ -58,26 +59,34 @@ async function initChuyenForm() {
 
         const data = await Promise.all([resTuyen.json(), resXe.json(), resTaiXe.json()]);
         
-        // --- BƯỚC ÉP KIỂU ĐÚNG ---
+        // Ép kiểu cho các mảng
         const tuyens = data[0].map(t => ({ id: t[0], name: t[1] }));
         const xes = data[1].map(x => ({ id: x[0], name: x[1] }));
-        
-        // Sửa ở đây: Sử dụng đúng key 'Ma' và 'Ten' mà log đã chỉ ra
         const taixes = data[2].map(tx => ({ id: tx.Ma, name: tx.Ten }));
 
-        // Bây giờ tất cả đều dùng .id và .name
-        document.getElementById('cx-tuyen').innerHTML = tuyens.map(t => 
-            `<option value="${t.id}">${t.id} - ${t.name}</option>`
-        ).join('');
+        const populateSelect = (elementId, list, prefix, defaultText) => {
+            const el = document.getElementById(elementId);
+            
+            // Tạo option mặc định đầu tiên
+            let html = `<option value="">--Chọn--</option>`;
+            
+            // Cộng dồn các option từ list vào sau
+            html += list.map(item => 
+                `<option value="${item.id}">${prefix ? item.id + ' - ' : ''}${item.name}</option>`
+            ).join('');
+            
+            el.innerHTML = html;
+        };
 
-        document.getElementById('cx-xe').innerHTML = xes.map(x => 
-            `<option value="${x.id}">${x.name}</option>`
-        ).join('');
+        // Đổ vào Form thêm
+        populateSelect('cx-tuyen', tuyens, true);
+        populateSelect('cx-xe', xes, false);
+        populateSelect('cx-taixe', taixes, false);
 
-        // Dùng .id và .name ở đây là đúng
-        document.getElementById('cx-taixe').innerHTML = taixes.map(tx => 
-            `<option value="${tx.id}">${tx.name}</option>`
-        ).join('');
+        // Đổ vào Modal Sửa
+        populateSelect('edit-cx-tuyen', tuyens, true);
+        populateSelect('edit-cx-xe', xes, false);
+        populateSelect('edit-cx-taixe', taixes, false);
         
     } catch (e) {
         console.error("Lỗi:", e);
@@ -99,7 +108,7 @@ function deleteChuyen(ma) {
 }
 
 async function handleAddChuyen() {
-    // 1. Lấy dữ liệu từ form
+    // 1. Lấy dữ  từ form
     const payload = {
         maChuyen: document.getElementById('cx-ma').value,
         thoiGian: document.getElementById('cx-thoigian').value,
@@ -108,14 +117,12 @@ async function handleAddChuyen() {
         maTaiXe: document.getElementById('cx-taixe').value
     };
 
-    // Kiểm tra dữ liệu trống (Validation cơ bản)
     if (!payload.maChuyen || !payload.thoiGian || !payload.maTuyen || !payload.maXe) {
         alert("Vui lòng nhập đầy đủ thông tin!");
         return;
     }
 
     try {
-        // 2. Gửi request lên Backend
         const res = await fetch('/api/chuyen', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -136,5 +143,57 @@ async function handleAddChuyen() {
     } catch (e) {
         console.error("Lỗi khi thêm:", e);
         alert("Có lỗi xảy ra khi kết nối tới server!");
+    }
+}
+
+async function editChuyen(ma) {
+    const res = await fetch(`/api/chuyen/${ma}`);
+    const data = await res.json(); 
+    console.log("Dữ liệu nhận được:", data);
+
+    document.getElementById('edit-cx-ma').value = data[0];
+    document.getElementById('display-ma-chuyen').innerText = data[0];
+    
+    // Format thời gian
+    document.getElementById('edit-cx-thoigian').value = data[1]
+    
+    // Gán MÃ (ID) để khớp với value của thẻ <select>
+    document.getElementById('edit-cx-xe').value = data[2];     // data[2] giờ là MaXe
+    document.getElementById('edit-cx-tuyen').value = data[3];   // data[3] giờ là MaTuyen
+    document.getElementById('edit-cx-taixe').value = data[4];   // data[4] là MaTaiXe
+
+    new bootstrap.Modal(document.getElementById('editChuyenModal')).show();
+}
+
+async function submitEditChuyen() {
+    const payload = {
+        thoiGian: document.getElementById('edit-cx-thoigian').value,
+        maTuyen: document.getElementById('edit-cx-tuyen').value,
+        maXe: document.getElementById('edit-cx-xe').value,
+        maTaiXe: document.getElementById('edit-cx-taixe').value,
+        trangThai: 'Sẵn sàng'
+    };
+    const ma = document.getElementById('edit-cx-ma').value;
+
+    try {
+        const res = await fetch(`/api/chuyen/${ma}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+            alert("Cập nhật thành công!");
+            bootstrap.Modal.getInstance(document.getElementById('editChuyenModal')).hide();
+            loadChuyenXe();
+        } else {
+            // Lấy thông báo lỗi từ server (nếu có)
+            const errorData = await res.json();
+            alert("Cập nhật thất bại: " + (errorData.message || errorData.error || "Có lỗi xảy ra"));
+        }
+    } catch (error) {
+        // Lỗi kết nối mạng hoặc lỗi server không phản hồi
+        console.error("Lỗi:", error);
+        alert("Không thể kết nối đến máy chủ để cập nhật!");
     }
 }
