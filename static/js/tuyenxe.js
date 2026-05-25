@@ -43,7 +43,6 @@ function loadTuyenXe() {
         .catch(err => console.error("Lỗi load bảng:", err));
 }
 
-// 2. Hàm đổ dữ liệu vào TẤT CẢ các Dropbox (Dùng chung cho Add và Edit)
 async function loadAllStationSelects() {
     try {
         const res = await fetch('/api/stations');
@@ -59,8 +58,8 @@ async function loadAllStationSelects() {
             sel.innerHTML = '<option value="">-- Chọn bến xe --</option>';
             stations.forEach(bx => {
                 const op = document.createElement('option');
-                op.value = bx.mabenxe || bx[0];      // Lấy mã bến
-                op.textContent = bx.tenbenxe || bx[1]; // Hiện tên bến
+                op.value = bx.mabenxe || bx[0];
+                op.textContent = bx.tenbenxe || bx[1];
                 sel.appendChild(op);
             });
         });
@@ -69,7 +68,6 @@ async function loadAllStationSelects() {
     }
 }
 
-// 3. Xử lý Thêm mới Tuyến xe
 function handleAddTuyen() {
     const ma = document.getElementById('tx-ma').value.trim();
     const selDau = document.getElementById('tx-dau');
@@ -81,7 +79,6 @@ function handleAddTuyen() {
         return;
     }
 
-    // Tự động tạo tên tuyến từ text trong Dropbox
     const tenDau = selDau.options[selDau.selectedIndex].text;
     const tenCuoi = selCuoi.options[selCuoi.selectedIndex].text;
 
@@ -102,7 +99,6 @@ function handleAddTuyen() {
     .then(data => {
         if (data.status === "success") {
             alert("Thêm tuyến thành công!");
-            // Reset form
             document.getElementById('tx-ma').value = '';
             document.getElementById('tx-gia').value = '';
             selDau.value = '';
@@ -114,18 +110,16 @@ function handleAddTuyen() {
     });
 }
 
-// 4. Mở Modal Chỉnh sửa và điền dữ liệu
 async function editTuyen(ma) {
     document.getElementById('display-ma-tx').innerText = ma;
     document.getElementById('edit-tx-ma').value = ma;
 
     try {
-        await loadAllStationSelects(); // Load lại bến xe để đảm bảo dropdown có data
+        await loadAllStationSelects();
 
         const res = await fetch(`/api/tuyenxe/${ma}`);
         const t = await res.json(); 
 
-        // t[2] là mã bến đi, t[3] là mã bến về (theo db.py get_tuyen_by_id)
         document.getElementById('edit-tx-dau').value = t[2];
         document.getElementById('edit-tx-cuoi').value = t[3];
         document.getElementById('edit-tx-gia').value = t[4];
@@ -136,7 +130,6 @@ async function editTuyen(ma) {
     }
 }
 
-// 5. Lưu kết quả chỉnh sửa
 function submitEditTuyen() {
     const ma = document.getElementById('edit-tx-ma').value;
     const selDau = document.getElementById('edit-tx-dau');
@@ -174,7 +167,6 @@ function submitEditTuyen() {
     .catch(err => console.error("Lỗi update:", err));
 }
 
-// 6. Xóa tuyến xe
 function deleteTuyen(ma) {
     if (!confirm(`Bạn có chắc muốn xóa tuyến ${ma} không?`)) return;
 

@@ -4,6 +4,8 @@ function showSection(sectionId) {
     const xeSec = document.getElementById('section-xe');
     const nhansuSec = document.getElementById('section-nhansu');
     const chuyenXeSec = document.getElementById('section-chuyen');
+    const banVeSec = document.getElementById('section-banve');
+
 
 
     benXeSec.style.display = 'none';
@@ -11,6 +13,7 @@ function showSection(sectionId) {
     xeSec.style.display = 'none';
     nhansuSec.style.display = 'none';
     chuyenXeSec.style.display = 'none';
+    banVeSec.style.display = 'none';
 
     if (sectionId === 'benxe') {
         benXeSec.style.display = 'block';
@@ -41,12 +44,20 @@ function showSection(sectionId) {
     else if (sectionId === 'chuyen') {
         chuyenXeSec.style.display = 'block';
         document.getElementById('main-title').innerText = "Quản lý Chuyến Xe";
-        console.log("Đang bắt đầu gọi hàm load data cho Chuyến xe...");
         if (typeof loadTaiXe === 'function') loadTaiXe();
         if (typeof loadChuyenXe === 'function') loadChuyenXe();
         if (typeof initChuyenForm === 'function') initChuyenForm(); 
 
     }
+
+    else if (sectionId === 'banve') {
+        banVeSec.style.display = 'block';
+        document.getElementById('main-title').innerText = "Bán Vé";
+        console.log("Đang bắt đầu gọi hàm load data cho Chuyến xe...");
+        if (typeof loadChuyenXe === 'function') loadChuyenXe()
+        if (typeof loadChuyenActive === 'function') loadChuyenActive()
+    }
+
 
     document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
     const activeMenu = document.getElementById('menu-' + sectionId);

@@ -514,3 +514,96 @@ def get_one_chuyen(ma):
             return row
     finally:
         conn.close()
+
+#------------VE
+
+# Lấy danh sách chuyến xe (Dùng cho dropdown Bán vé)
+def get_chuyen_active():
+    query = '''
+        SELECT c.MaChuyen, t.TenTuyen, TO_CHAR(c.ThoiGianKhoiHanh, 'YYYY-MM-DD HH24:MI'), t.GiaVe, xe.SoCho
+        FROM CHUYEN_XE c
+        JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
+        JOIN XE_BUS xe ON c.MaXe = xe.MaXe
+        WHERE c.TrangThai IN ('Sẵn sàng', 'Đang chạy')
+        order by c.MaChuyen ASC
+    '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+# Kiểm tra khách hàng theo SĐT (Để tránh tạo trùng)
+def get_khach_by_sdt(sdt):
+    query = "SELECT MaHanhKhach, TenHanhKhach FROM HANH_KHACH WHERE SoDienThoai = %s"
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (sdt,))
+            return cur.fetchone()
+    finally:
+        conn.close()
+
+# Thêm khách hàng mới
+def insert_khach(ma, ten, sdt):
+    query = "INSERT INTO HANH_KHACH (MaHanhKhach, TenHanhKhach, SoDienThoai) VALUES (%s, %s, %s)"
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma, ten, sdt))
+            conn.commit()
+    finally:
+        conn.close()
+
+# Insert Vé
+def insert_ve(ma_ve, gia, ma_chuyen, ma_khach):
+    query = "INSERT INTO VE (MaVe, GiaVe, MaChuyen, MaHanhKhach) VALUES (%s, %s, %s, %s)"
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma_ve, gia, ma_chuyen, ma_khach))
+            conn.commit()
+    finally:
+        conn.close()
+
+def get_all_ve():
+    query = '''
+        SELECT v.MaVe, v.GiaVe, t.TenTuyen, k.TenHanhKhach 
+        FROM VE v
+        JOIN CHUYEN_XE c ON v.MaChuyen = c.MaChuyen
+        JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
+        JOIN HANH_KHACH k ON v.MaHanhKhach = k.MaHanhKhach
+    '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            return cur.fetchall()
+    finally:
+        conn.close()
+
+def tru_cho_ngoi(maChuyen):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            # PostgreSQL dùng cú pháp UPDATE với FROM thay vì JOIN
+            sql = '''
+                UPDATE XE_BUS
+                SET SoCho = SoCho - 1
+                FROM CHUYEN_XE
+                WHERE XE_BUS.MaXe = CHUYEN_XE.MaXe
+                AND CHUYEN_XE.MaChuyen = %s
+                AND XE_BUS.SoCho > 0
+            '''
+            
+            cur.execute(sql, (maChuyen,))
+            
+            # rowcount cho biết số dòng đã được cập nhật
+            affected = cur.rowcount 
+            conn.commit()
+            
+            return affected > 0
+    finally:
+        conn.close()

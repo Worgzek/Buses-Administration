@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
-import db  # Gọi file db.py chứa các hàm truy vấn SQL
+import db
+import uuid 
 
 app = Flask(__name__)
 @app.route('/')
@@ -258,6 +259,8 @@ def update_nhanvien(ma):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+#-----CCHUYEN-----
+
 @app.route('/api/chuyen', methods=['GET']) 
 def get_all_chuyen():
     data = db.get_all_route()
@@ -295,6 +298,68 @@ def api_update_chuyen(ma):
         return jsonify({"message": "Cập nhật thành công!"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+#--------------VE----------------
+
+@app.route('/api/chuyen-active', methods=['GET'])
+def get_chuyen_active_list():
+    data = db.get_chuyen_active()
+    # Chuyển đổi thành list of dict để dễ dùng ở JS
+    result = [{"ma": c[0], "tuyen": c[1], "gio": c[2], "gia": c[3], "cho": c[4]} for c in data]
+    return jsonify(result), 200
+
+@app.route('/api/khachhang/<sdt>', methods=['GET'])
+def check_khach_hang(sdt):
+    data = db.get_khach_by_sdt(sdt)
+    if data:
+        return jsonify({"exists": True, "ten": data[1]}), 200
+    return jsonify({"exists": False}), 200
+
+@app.route('/api/ban-ve', methods=['POST'])
+def api_ban_ve():
+    req = request.json
+    maChuyen = req.get('maChuyen')
+    sdt = req.get('sdt')
+    ten = req.get('ten')
+    gia = req.get('gia')
+
+    try:
+        # 1. Kiểm tra/Thêm khách hàng
+        khach = db.get_khach_by_sdt(sdt)
+        ma_khach = khach[0] if khach else "KH" + sdt[-4:]
+        if not khach:
+            db.insert_khach(ma_khach, ten, sdt)
+            
+        # 2. Trừ chỗ (Logic này giờ nằm gọn trong db.py)
+        if not db.tru_cho_ngoi(maChuyen):
+            return jsonify({"error": "Đã hết chỗ hoặc chuyến không tồn tại!"}), 400
+            
+        # 3. Lưu vé
+        ma_ve = "VE" + str(uuid.uuid4().hex[:6].upper())
+        db.insert_ve(ma_ve, gia, maChuyen, ma_khach)
+        
+        return jsonify({"message": "Bán vé thành công!", "maVe": ma_ve}), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# Trong app.py
+@app.route('/api/ve', methods=['GET'])
+def get_ve_list():
+    data = db.get_all_ve()
+    # Kiểm tra thử xem data có dữ liệu không
+    print("Dữ liệu nhận được:", data) 
+    
+    result = []
+    for v in data:
+        result.append({
+            "maVe": v[0],       # Cột 1: MaVe
+            "gia": v[1],        # Cột 2: GiaVe
+            "tuyen": v[2],      # Cột 3: TenTuyen
+            "tenKhach": v[3]    # Cột 4: TenHanhKhach
+        })
+    return jsonify(result), 200
+
     
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)

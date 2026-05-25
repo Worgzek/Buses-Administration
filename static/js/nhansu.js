@@ -227,7 +227,6 @@ async function deleteNhanVien(ma) {
 }
 
 async function deleteTaiXe(ma) {
-    // 1. Hỏi xác nhận trước khi xóa (Cho chuyên nghiệp)
     if (!confirm(`Bạn có chắc chắn muốn xóa tài xế có mã ${ma} không?`)) {
         return;
     }
@@ -262,17 +261,14 @@ async function editTaiXe(ma) {
             document.getElementById('edit-tx-sdt').value = tx.SDT || tx[2];
             document.getElementById('edit-tx-bang').value = tx.BangLai || tx[3];
 
-            // Xử lý đổ Option cho Trạng thái
             const statusSelect = document.getElementById('edit-tx-trangthai');
             const currentStatus = tx.TrangThai || tx[4];
             
             let options = `<option value="${currentStatus}" selected>${currentStatus} (Hiện tại)</option>`;
             
-            // Nếu trạng thái hiện tại chưa phải là "Nghỉ", thì mới thêm option "Nghỉ"
             if (currentStatus !== "Nghỉ") {
                 options += `<option value="Nghỉ">Nghỉ</option>`;
             } else {
-                // Nếu đang "Nghỉ", có thể cho họ quay lại "Sẵn sàng" để hệ thống tính tiếp
                 options += `<option value="Sẵn sàng">Kích hoạt lại (Sẵn sàng)</option>`;
             }
             
@@ -296,7 +292,6 @@ async function submitEditTaiXe() {
         trangthai: document.getElementById('edit-tx-trangthai').value
     };
 
-    // Kiểm tra nhanh ở Frontend trước khi gửi
     if (!payload.ten || !payload.sdt || !payload.banglai || !payload.trangthai) {
         alert("Vui lòng nhập đầy đủ thông tin: Tên, SĐT, Bằng lái và Trạng thái!");
         return;
@@ -314,15 +309,12 @@ async function submitEditTaiXe() {
         if (res.ok) {
             alert("Cập nhật thành công!");
             
-            // Đóng modal sau khi xong
             const modalElem = document.getElementById('editTaiXeModal');
             const modal = bootstrap.Modal.getInstance(modalElem);
             modal.hide();
 
-            // Load lại bảng để thấy dữ liệu mới ngay lập tức
             loadTaiXe(); 
         } else {
-            // Hiển thị lỗi từ Backend (Ví dụ: "Thiếu thông tin: ten")
             alert("Lỗi: " + (result.error || "Không thể cập nhật"));
         }
     } catch (e) {
@@ -339,7 +331,6 @@ async function fillStationsToSelect() {
         const selectMaben = document.getElementById('edit-nv-maben');
         if (!selectMaben) return;
 
-        // Xóa sạch option cũ, chỉ để lại cái mặc định
         selectMaben.innerHTML = '<option value="">-- Chọn bến xe --</option>';
 
         stations.forEach(st => {
@@ -405,6 +396,6 @@ async function submitEditNhanVien() {
         }
     } catch (e) {
         console.error("Lỗi:", e);
-        alert("Lỗi mạng, kiểm tra console F12!");
+        alert("Lỗi", e);
     }
 }

@@ -48,7 +48,6 @@ async function loadChuyenXe() {
     }
 }
 
-// Sửa hàm initChuyenForm của ông thành:
 async function initChuyenForm() {
     try {
         const [resTuyen, resXe, resTaiXe] = await Promise.all([
@@ -64,13 +63,10 @@ async function initChuyenForm() {
         const xes = data[1].map(x => ({ id: x[0], name: x[1] }));
         const taixes = data[2].map(tx => ({ id: tx.Ma, name: tx.Ten }));
 
-        const populateSelect = (elementId, list, prefix, defaultText) => {
+        const populateSelect = (elementId, list, prefix) => {
             const el = document.getElementById(elementId);
             
-            // Tạo option mặc định đầu tiên
-            let html = `<option value="">--Chọn--</option>`;
-            
-            // Cộng dồn các option từ list vào sau
+            let html = `<option value="">--Chọn--</option>`;            
             html += list.map(item => 
                 `<option value="${item.id}">${prefix ? item.id + ' - ' : ''}${item.name}</option>`
             ).join('');
@@ -78,12 +74,10 @@ async function initChuyenForm() {
             el.innerHTML = html;
         };
 
-        // Đổ vào Form thêm
         populateSelect('cx-tuyen', tuyens, true);
         populateSelect('cx-xe', xes, false);
         populateSelect('cx-taixe', taixes, false);
 
-        // Đổ vào Modal Sửa
         populateSelect('edit-cx-tuyen', tuyens, true);
         populateSelect('edit-cx-xe', xes, false);
         populateSelect('edit-cx-taixe', taixes, false);
@@ -153,14 +147,10 @@ async function editChuyen(ma) {
 
     document.getElementById('edit-cx-ma').value = data[0];
     document.getElementById('display-ma-chuyen').innerText = data[0];
-    
-    // Format thời gian
-    document.getElementById('edit-cx-thoigian').value = data[1]
-    
-    // Gán MÃ (ID) để khớp với value của thẻ <select>
-    document.getElementById('edit-cx-xe').value = data[2];     // data[2] giờ là MaXe
-    document.getElementById('edit-cx-tuyen').value = data[3];   // data[3] giờ là MaTuyen
-    document.getElementById('edit-cx-taixe').value = data[4];   // data[4] là MaTaiXe
+    document.getElementById('edit-cx-thoigian').value = data[1]    
+    document.getElementById('edit-cx-xe').value = data[2];
+    document.getElementById('edit-cx-tuyen').value = data[3];
+    document.getElementById('edit-cx-taixe').value = data[4]; 
 
     new bootstrap.Modal(document.getElementById('editChuyenModal')).show();
 }
@@ -187,12 +177,10 @@ async function submitEditChuyen() {
             bootstrap.Modal.getInstance(document.getElementById('editChuyenModal')).hide();
             loadChuyenXe();
         } else {
-            // Lấy thông báo lỗi từ server (nếu có)
             const errorData = await res.json();
-            alert("Cập nhật thất bại: " + (errorData.message || errorData.error || "Có lỗi xảy ra"));
+            alert("Cập nhật thất bại:");
         }
     } catch (error) {
-        // Lỗi kết nối mạng hoặc lỗi server không phản hồi
         console.error("Lỗi:", error);
         alert("Không thể kết nối đến máy chủ để cập nhật!");
     }
