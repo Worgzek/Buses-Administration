@@ -427,3 +427,27 @@ def update_nv(ma, ten, sdt, chucvu, maben):
             conn.commit()
     finally:
         conn.close()
+
+#-----CCHUYEN XE------
+
+def get_all_route():
+    query = '''
+            Select 
+            c.MaChuyen
+            ,c.ThoiGianKhoiHanh
+            ,x.BienSo
+            ,t.TenTuyen
+            ,c.TrangThai
+            from CHUYEN_XE c
+            join XE_BUS x on c.MaXe = x.MaXe
+            join TUYEN_XE t on c.MaTuyen = t.MaTuyen
+            order by c.MaChuyen ASC
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query)
+            rows = cur.fetchall()
+            return rows
+    finally:
+        conn.close()

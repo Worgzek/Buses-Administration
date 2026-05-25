@@ -3,11 +3,14 @@ function showSection(sectionId) {
     const tuyenXeSec = document.getElementById('section-tuyenxe');
     const xeSec = document.getElementById('section-xe');
     const nhansuSec = document.getElementById('section-nhansu');
+    const chuyenXeSec = document.getElementById('section-chuyen');
+
 
     benXeSec.style.display = 'none';
     tuyenXeSec.style.display = 'none';
     xeSec.style.display = 'none';
     nhansuSec.style.display = 'none';
+    chuyenXeSec.style.display = 'none';
 
     if (sectionId === 'benxe') {
         benXeSec.style.display = 'block';
@@ -28,14 +31,25 @@ function showSection(sectionId) {
     }
     else if (sectionId === 'nhansu') {
         nhansuSec.style.display = 'block';
-        document.getElementById('main-title').innerText = "Quản lý Nhân sự"; // Đã sửa tiêu đề
+        document.getElementById('main-title').innerText = "Quản lý Nhân sự";
         if (typeof loadNhanVien === 'function') loadNhanVien();
         if (typeof loadTaiXe === 'function') loadTaiXe();
         if (typeof loadBenXeSelect === 'function') loadBenXeSelect();
         
     }
 
+    else if (sectionId === 'chuyen') {
+        chuyenXeSec.style.display = 'block';
+        document.getElementById('main-title').innerText = "Quản lý Chuyến Xe";
+        console.log("Đang bắt đầu gọi hàm load data cho Chuyến xe...");
+        if (typeof loadTaiXe === 'function') loadTaiXe();
+        if (typeof loadChuyenXe === 'function') loadChuyenXe();
+        if (typeof initChuyenForm === 'function') initChuyenForm(); 
+
+    }
+
     document.querySelectorAll('#sidebar li').forEach(li => li.classList.remove('active'));
     const activeMenu = document.getElementById('menu-' + sectionId);
     if (activeMenu) activeMenu.classList.add('active');
+    
 }

@@ -45,12 +45,11 @@ CREATE TABLE NHAN_VIEN (
 
 CREATE TABLE CHUYEN_XE (
     MaChuyen VARCHAR(10) PRIMARY KEY,
-    NgayKhoiHanh DATE NOT NULL,
-    GioKhoiHanh TIME NOT NULL,
+    ThoiGianKhoiHanh TIMESTAMP NOT NULL,
     MaXe VARCHAR(10) REFERENCES XE_BUS(MaXe) ON DELETE CASCADE,
     MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen),
     MaTaiXe VARCHAR(10) REFERENCES TAI_XE(MaTaiXe),
-    TrangThai VARCHAR(50) DEFAULT 'Sắp chạy' CHECK (TrangThai IN ('Sắp chạy', 'Đang chạy', 'Hoàn thành', 'Hủy'))
+    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng' CHECK (TrangThai IN ('Sẵn sàng', 'Đang chạy', 'Hủy'))
 );
 
 CREATE TABLE VE (

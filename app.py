@@ -258,7 +258,11 @@ def update_nhanvien(ma):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    
+@app.route('/api/chuyen', methods=['GET']) 
+def get_all_chuyen():
+    data = db.get_all_route()
+    return jsonify(data)
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

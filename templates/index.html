@@ -15,8 +15,11 @@
             <h3>BUS ADMIN</h3>
         </div>
         <ul class="list-unstyled components">
+            <li id="menu-chuyen" class="active" onclick="showSection('chuyen')">
+                <i class="fas fa-bus me-2"></i> Quản lý Chuyến Xe
+            </li>
             <li id="menu-benxe" class="active" onclick="showSection('benxe')">
-                <i class="fas fa-bus me-2"></i> Quản lý Bến xe
+                <i class="fas fa-bus me-2"></i> Bến xe
             </li>
             <li id="menu-tuyenxe" onclick="showSection('tuyenxe')">
                 <i class="fas fa-route me-2"></i> Tuyến xe
@@ -37,6 +40,58 @@
                 <div class="user-profile">
                     <span class="me-2 fw-semibold">Admin</span>
                     <i class="fas fa-user-circle fa-lg"></i>
+                </div>
+            </div>
+
+            <div id="section-chuyen" class="content-section">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4"><i class="fas fa-plus-circle me-2"></i>Thêm Chuyến Xe Mới</h5>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Mã Chuyến</label>
+                                <input type="text" id="cx-ma" class="form-control" placeholder="C01">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Thời gian</label>
+                                <input type="datetime-local" id="cx-thoigian" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Tuyến</label>
+                                <select id="cx-tuyen" class="form-select"></select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Xe</label>
+                                <select id="cx-xe" class="form-select"></select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small fw-bold">Tài xế</label>
+                                <select id="cx-taixe" class="form-select"></select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button class="btn btn-primary w-100" onclick="handleAddChuyen()">Thêm chuyến</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container shadow-sm p-4 bg-white rounded">
+                    <h5 class="fw-bold mb-3">Danh Sách Chuyến Xe</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Thời gian</th>
+                                    <th>Biển số</th>
+                                    <th>Tuyến</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body-chuyen"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -403,8 +458,9 @@
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Hạng bằng lái</label>
                             <select id="edit-tx-bang" class="form-select">
-                                <option value="Hạng E">Hạng E (Tiêu chuẩn)</option>
-                                <option value="Hạng FC">Hạng FC</option>
+                                <option value="Hạng E">Hạng E</option>
+                                <option value="Hạng FD">Hạng FD</option>
+                                <option value="Hạng FE">Hạng FE</option>
                             </select>
                         </div>
 
@@ -475,6 +531,7 @@
     <script src="{{ url_for('static', filename='js/tuyenxe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/xe.js') }}"></script>
     <script src="{{ url_for('static', filename='js/nhansu.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chuyen.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
