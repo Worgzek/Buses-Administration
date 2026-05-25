@@ -263,6 +263,25 @@ def get_all_chuyen():
     data = db.get_all_route()
     return jsonify(data)
 
+@app.route('/api/chuyen/<ma>', methods=['DELETE'])
+def xoa_chuyen(ma):
+    try:
+        db.delete_chuyen(ma)
+        return jsonify({"status": "success", "message": f"Đã xóa chuyen {ma} thành công!"}), 200
+    except Exception as e:
+        if "foreign key" in str(e).lower():
+            return jsonify({"error": "Không thể xóa! Chuyến xe này đã bán vé"}), 400
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+@app.route('/api/chuyen', methods=['POST'])
+def post_chuyen():
+    req = request.json
+    try:
+        db.add_chuyen(req['maChuyen'], req['thoiGian'], req['maXe'], req['maTuyen'], req['maTaiXe'])
+        return jsonify({"message": "Thêm chuyến xe thành công!"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

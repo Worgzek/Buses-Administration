@@ -451,3 +451,31 @@ def get_all_route():
             return rows
     finally:
         conn.close()
+
+def delete_chuyen(ma):
+    query='''
+            delete from CHUYEN_XE 
+            where MaChuyen = %s
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query,(ma,))
+            conn.commit()
+    finally:
+        conn.close()
+
+
+def add_chuyen(ma, thoigian, tuyen, xe, taixe):
+    query='''
+            insert into CHUYEN_XE(MaChuyen, ThoiGianKhoiHanh, MaXe, MaTuyen, MaTaiXe, TrangThai)
+            values
+            (%s,%s,%s,%s,%s,%s)
+            '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, (ma, thoigian, tuyen, xe, taixe, 'Sẵn sàng'))
+            conn.commit()
+    finally:
+        conn.close()

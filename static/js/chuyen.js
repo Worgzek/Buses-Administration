@@ -47,3 +47,94 @@ async function loadChuyenXe() {
         console.error("Lỗi xảy ra trong loadChuyenXe:", e);
     }
 }
+
+async function initChuyenForm() {
+    try {
+        const [resTuyen, resXe, resTaiXe] = await Promise.all([
+            fetch('/api/tuyenxe'),
+            fetch('/api/xe'),
+            fetch('/api/taixe')
+        ]);
+
+        const data = await Promise.all([resTuyen.json(), resXe.json(), resTaiXe.json()]);
+        
+        // --- BƯỚC ÉP KIỂU ĐÚNG ---
+        const tuyens = data[0].map(t => ({ id: t[0], name: t[1] }));
+        const xes = data[1].map(x => ({ id: x[0], name: x[1] }));
+        
+        // Sửa ở đây: Sử dụng đúng key 'Ma' và 'Ten' mà log đã chỉ ra
+        const taixes = data[2].map(tx => ({ id: tx.Ma, name: tx.Ten }));
+
+        // Bây giờ tất cả đều dùng .id và .name
+        document.getElementById('cx-tuyen').innerHTML = tuyens.map(t => 
+            `<option value="${t.id}">${t.id} - ${t.name}</option>`
+        ).join('');
+
+        document.getElementById('cx-xe').innerHTML = xes.map(x => 
+            `<option value="${x.id}">${x.name}</option>`
+        ).join('');
+
+        // Dùng .id và .name ở đây là đúng
+        document.getElementById('cx-taixe').innerHTML = taixes.map(tx => 
+            `<option value="${tx.id}">${tx.name}</option>`
+        ).join('');
+        
+    } catch (e) {
+        console.error("Lỗi:", e);
+    }
+}
+
+function deleteChuyen(ma) {
+    if (confirm(`Bạn chắc chắn muốn xóa chuyến ${ma} không?`)) {
+        fetch(`/api/chuyen/${ma}`, { method: 'DELETE' })
+        .then(res => {
+            if (res.ok) {
+                alert('Xóa thành công!');
+                loadChuyenXe();
+            } else {
+                alert('Không thể xóa! Chuyến này đang hoạt động');
+            }
+        });
+    }
+}
+
+async function handleAddChuyen() {
+    // 1. Lấy dữ liệu từ form
+    const payload = {
+        maChuyen: document.getElementById('cx-ma').value,
+        thoiGian: document.getElementById('cx-thoigian').value,
+        maTuyen: document.getElementById('cx-tuyen').value,
+        maXe: document.getElementById('cx-xe').value,
+        maTaiXe: document.getElementById('cx-taixe').value
+    };
+
+    // Kiểm tra dữ liệu trống (Validation cơ bản)
+    if (!payload.maChuyen || !payload.thoiGian || !payload.maTuyen || !payload.maXe) {
+        alert("Vui lòng nhập đầy đủ thông tin!");
+        return;
+    }
+
+    try {
+        // 2. Gửi request lên Backend
+        const res = await fetch('/api/chuyen', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+            alert("Thêm chuyến xe thành công!");
+            // 3. Reset form và load lại bảng
+            document.getElementById('cx-ma').value = '';
+            document.getElementById('cx-thoigian').value = '';
+            loadChuyenXe(); 
+        } else {
+            alert("Lỗi: " + (result.message || "Không thể thêm chuyến xe"));
+        }
+    } catch (e) {
+        console.error("Lỗi khi thêm:", e);
+        alert("Có lỗi xảy ra khi kết nối tới server!");
+    }
+}
