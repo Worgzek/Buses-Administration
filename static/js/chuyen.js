@@ -15,9 +15,10 @@ async function loadChuyenXe() {
             const thoiGian = c[1];
             const bienSo = c[2];
             const tenTuyen = c[3];
-            const trangThai = c[4] || 'Chưa cập nhật';
+            const taiXe = c[4] || 'Chưa cập nhật';
+            const trangThai = c[5] || 'Chưa cập nhật';
             
-            const time = thoiGian ? thoiGian.substring(0, 26) : 'N/A';
+            const time = thoiGian ? thoiGian.substring(0, 23) : 'N/A';
 
             let statusClass = '';
             if (trangThai.includes('Đang chạy') || trangThai.includes('Đang chạy')) statusClass = 'bg-warning-subtle text-warning';
@@ -30,6 +31,7 @@ async function loadChuyenXe() {
                 <td>${time}</td>
                 <td><span class="badge bg-dark px-2">${bienSo}</span></td>
                 <td>${tenTuyen}</td>
+                <td>${taiXe}</td>
                 <td><span class="badge ${statusClass} px-3">${trangThai}</span></td>
                 <td class="text-center">
                     <button class="btn btn-sm btn-light text-primary me-2" onclick="editChuyen('${ma}')">

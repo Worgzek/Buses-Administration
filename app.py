@@ -330,11 +330,9 @@ def api_ban_ve():
         if not khach:
             db.insert_khach(ma_khach, ten, sdt)
             
-        # 2. Trừ chỗ (Logic này giờ nằm gọn trong db.py)
         if not db.tru_cho_ngoi(maChuyen):
             return jsonify({"error": "Đã hết chỗ hoặc chuyến không tồn tại!"}), 400
             
-        # 3. Lưu vé
         ma_ve = "VE" + str(uuid.uuid4().hex[:6].upper())
         db.insert_ve(ma_ve, gia, maChuyen, ma_khach)
         
@@ -343,23 +341,31 @@ def api_ban_ve():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-# Trong app.py
 @app.route('/api/ve', methods=['GET'])
 def get_ve_list():
     data = db.get_all_ve()
-    # Kiểm tra thử xem data có dữ liệu không
     print("Dữ liệu nhận được:", data) 
     
     result = []
     for v in data:
         result.append({
-            "maVe": v[0],       # Cột 1: MaVe
-            "gia": v[1],        # Cột 2: GiaVe
-            "tuyen": v[2],      # Cột 3: TenTuyen
-            "tenKhach": v[3]    # Cột 4: TenHanhKhach
+            "maVe": v[0],
+            "gia": v[1],
+            "tuyen": v[2],
+            "tenKhach": v[3] 
         })
     return jsonify(result), 200
 
+
+# app.py
+@app.route('/api/ve/<ma_ve>', methods=['DELETE'])
+def api_xoa_ve(ma_ve):
+    try:
+        if db.xoa_ve(ma_ve):
+            return jsonify({"message": "Đã xóa vé thành công!"}), 200
+        return jsonify({"error": "Không tìm thấy vé!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)

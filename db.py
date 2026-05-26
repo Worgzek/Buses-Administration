@@ -437,10 +437,12 @@ def get_all_route():
             ,c.ThoiGianKhoiHanh
             ,x.BienSo
             ,t.TenTuyen
+            ,tx.TenTaiXe
             ,c.TrangThai
             from CHUYEN_XE c
             join XE_BUS x on c.MaXe = x.MaXe
             join TUYEN_XE t on c.MaTuyen = t.MaTuyen
+            left join TAI_XE tx ON c.MaTaiXe = tx.MaTaiXe
             order by c.MaChuyen ASC
             '''
     conn = get_db_connection()
@@ -585,25 +587,47 @@ def get_all_ve():
         conn.close()
 
 def tru_cho_ngoi(maChuyen):
+    query = '''
+        UPDATE XE_BUS
+        SET SoCho = SoCho - 1
+        FROM CHUYEN_XE
+        WHERE XE_BUS.MaXe = CHUYEN_XE.MaXe
+        AND CHUYEN_XE.MaChuyen = %s
+        AND XE_BUS.SoCho > 0
+    '''
     conn = get_db_connection()
     try:
-        with conn.cursor() as cur:
-            # PostgreSQL dùng cú pháp UPDATE với FROM thay vì JOIN
-            sql = '''
-                UPDATE XE_BUS
-                SET SoCho = SoCho - 1
-                FROM CHUYEN_XE
-                WHERE XE_BUS.MaXe = CHUYEN_XE.MaXe
-                AND CHUYEN_XE.MaChuyen = %s
-                AND XE_BUS.SoCho > 0
-            '''
-            
-            cur.execute(sql, (maChuyen,))
-            
-            # rowcount cho biết số dòng đã được cập nhật
+        with conn.cursor() as cur:            
+            cur.execute(query, (maChuyen,))
             affected = cur.rowcount 
             conn.commit()
             
             return affected > 0
+    finally:
+        conn.close()
+
+# db.py
+def xoa_ve(ma_ve):
+    tim_chuyen='''
+                SELECT MaChuyen FROM VE WHERE MaVe = %s
+                '''
+    del_ve='''
+            DELETE FROM VE WHERE MaVe = %s
+            '''
+    update_cho='''UPDATE XE_BUS 
+                SET SoCho = SoCho + 1 
+                WHERE MaXe = (SELECT MaXe FROM CHUYEN_XE WHERE MaChuyen = %s)
+                '''
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(tim_chuyen, (ma_ve,))
+            res = cur.fetchone()
+            if not res: return False
+            ma_chuyen = res[0]            
+            cur.execute(del_ve, (ma_ve,))
+            cur.execute(update_cho, (ma_chuyen,))            
+            conn.commit()
+            return True
     finally:
         conn.close()
