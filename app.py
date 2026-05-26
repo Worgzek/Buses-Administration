@@ -381,6 +381,16 @@ def api_get_xe_theo_tuyen(ma_tuyen):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+# app.py
+
+@app.route('/api/dashboard', methods=['GET'])
+def dashboard_api():
+    try:
+        data = db.get_dashboard_stats()
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0', port=5000)
 

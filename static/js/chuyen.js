@@ -17,15 +17,12 @@ async function loadChuyenXe() {
             const tenTuyen = c[3];
             const taiXe = c[4] || 'Chưa cập nhật';
             const trangThai = c[5] || 'Chưa cập nhật';
-            
-            // SỬA LỖI Ở ĐÂY: Dùng 'c' thay vì 'item'
             const choConLai = c[6]; 
             
-            const time = thoiGian ? thoiGian.substring(0, 16) : 'N/A'; // Sửa substring thành 16 cho đẹp giờ
+            const time = thoiGian ? thoiGian.substring(0, 23) : 'N/A';
 
             const isLocked = (trangThai === 'Đang hoạt động');
             
-            // Logic hiển thị chỗ ngồi
             let choDisplay = (choConLai <= 0) 
                 ? '<span class="text-danger fw-bold">Hết chỗ</span>' 
                 : `<span class="text-primary fw-bold">${choConLai}</span>`;

@@ -468,7 +468,7 @@ def get_all_route():
                 ,t.TenTuyen
                 ,tx.TenTaiXe
                 ,c.TrangThai
-                , (x.SoCho - COALESCE(v_count.da_ban, 0)) as ChoConLai
+                ,x.SoCho as ChoConLai
             FROM CHUYEN_XE c
             LEFT JOIN XE_BUS x ON c.MaXe = x.MaXe
             LEFT JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
@@ -709,3 +709,52 @@ def get_xe_by_tuyen(ma_tuyen):
     conn.close()
     
     return [{"MaXe": x[0], "BienSo": x[1]} for x in xes]
+
+# db.py
+
+def get_dashboard_stats():
+    # Các câu truy vấn PostgreSQL
+    q_doanh_thu = '''SELECT SUM(GiaVe) FROM VE'''
+    q_dang_hoat_dong = '''SELECT COUNT(*) FROM CHUYEN_XE WHERE TrangThai = 'Đang hoạt động' '''
+    q_tong_khach = '''SELECT COUNT(*) FROM VE'''
+    
+    # Dùng CURRENT_DATE cho PostgreSQL
+    q_chuyen_hom_nay = '''SELECT COUNT(*) FROM CHUYEN_XE WHERE ThoiGianKhoiHanh::date = CURRENT_DATE'''
+    
+    q_top_tuyen = '''
+        SELECT t.TenTuyen, COUNT(v.MaVe) as SoVe 
+        FROM VE v
+        JOIN CHUYEN_XE c ON v.MaChuyen = c.MaChuyen
+        JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
+        GROUP BY t.TenTuyen
+        ORDER BY SoVe DESC LIMIT 5
+    '''
+
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(q_doanh_thu)
+            tong_doanh_thu = cur.fetchone()[0] or 0
+            
+            cur.execute(q_dang_hoat_dong)
+            dang_hoat_dong = cur.fetchone()[0]
+            
+            cur.execute(q_tong_khach)
+            tong_khach = cur.fetchone()[0]
+            
+            cur.execute(q_chuyen_hom_nay)
+            chuyen_hom_nay = cur.fetchone()[0]
+            
+            cur.execute(q_top_tuyen)
+            # Dùng list comprehension với dữ liệu lấy từ Postgres
+            top_tuyen = [{"name": r[0], "value": r[1]} for r in cur.fetchall()]
+            
+            return {
+                "doanhThu": float(tong_doanh_thu),
+                "dangHoatDong": dang_hoat_dong,
+                "tongKhach": tong_khach,
+                "chuyenHomNay": chuyen_hom_nay,
+                "topTuyen": top_tuyen
+            }
+    finally:
+        conn.close()

@@ -14,8 +14,11 @@
         <div class="sidebar-header">
             <h3>BUS ADMIN</h3>
         </div>
-        <ul class="list-unstyled components">
 
+        <ul class="list-unstyled components">
+            <li id="menu-main" onclick="showSection('main')">
+                <i class="fas fa-tachometer-alt me-2"></i> Tổng quan
+            </li>
             <li id="menu-banve" onclick="showSection('banve')">
                 <i class="fas fa-ticket me-2"></i> Bán Vé
             </li>
@@ -44,6 +47,50 @@
                 <div class="user-profile">
                     <span class="me-2 fw-semibold">Admin</span>
                     <i class="fas fa-user-circle fa-lg"></i>
+                </div>
+            </div>
+
+            <div id="dashboard-section" class="container-fluid mt-4">                
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="card p-3 border-0 shadow-sm bg-primary text-white">
+                            <p class="mb-0">Tổng Doanh Thu</p>
+                            <h3 id="stat-doanh-thu">0 VNĐ</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 border-0 shadow-sm bg-success text-white">
+                            <p class="mb-0">Chuyến Đang Chạy</p>
+                            <h3 id="stat-dang-chay">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 border-0 shadow-sm bg-warning text-dark">
+                            <p class="mb-0">Tổng Khách Đã Phục Vụ</p>
+                            <h3 id="stat-khach">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card p-3 border-0 shadow-sm bg-info text-white">
+                            <p class="mb-0">Chuyến Trong Ngày</p>
+                            <h3 id="stat-chuyen-hom-nay">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-8">
+                        <div class="card p-4 shadow-sm border-0">
+                            <h5>Biểu Đồ Doanh Thu Theo Tuyến</h5>
+                            <canvas id="myChart" height="100"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card p-4 shadow-sm border-0 h-100">
+                            <h5>Top 5 Tuyến Đông Nhất</h5>
+                            <ul class="list-group list-group-flush mt-3" id="top-tuyen-list">
+                                </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="section-banve" class="content-section" style="display: none;">
@@ -115,7 +162,7 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
+            </div>
 
             <div id="section-chuyen" class="content-section">
                 <div class="card shadow-sm mb-4">
@@ -652,5 +699,6 @@
     <script src="{{ url_for('static', filename='js/chuyen.js') }}"></script>
     <script src="{{ url_for('static', filename='js/banve.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>

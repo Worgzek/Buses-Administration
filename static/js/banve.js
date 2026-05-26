@@ -109,7 +109,8 @@ async function submitTicket() {
         await loadChuyenActive(); 
         
         loadRecentTickets(); 
-        
+        loadDashboard();
+              
         document.getElementById('ticket-khach-sdt').value = '';
         document.getElementById('ticket-khach-ten').value = '';
         
@@ -154,6 +155,7 @@ async function xoaVe(maVe) {
 
         loadRecentTickets();
         loadChuyenActive(); 
+        loadDashboard();
     } else {
         alert("Lỗi: " + result.error);
     }
