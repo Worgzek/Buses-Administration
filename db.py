@@ -526,7 +526,7 @@ def get_chuyen_active():
         FROM CHUYEN_XE c
         JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
         JOIN XE_BUS xe ON c.MaXe = xe.MaXe
-        WHERE c.TrangThai IN ('Sẵn sàng', 'Đang chạy')
+        WHERE c.TrangThai IN ('Sẵn sàng', 'Đang hoạt động')
         order by c.MaChuyen ASC
     '''
     conn = get_db_connection()
@@ -562,10 +562,16 @@ def insert_khach(ma, ten, sdt):
 # Insert Vé
 def insert_ve(ma_ve, gia, ma_chuyen, ma_khach):
     query = "INSERT INTO VE (MaVe, GiaVe, MaChuyen, MaHanhKhach) VALUES (%s, %s, %s, %s)"
+    chuyen_status = '''
+            UPDATE CHUYEN_XE 
+            SET TrangThai = 'Đang hoạt động' 
+            WHERE MaChuyen = %s AND TrangThai = 'Sẵn sàng'
+    '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
             cur.execute(query, (ma_ve, gia, ma_chuyen, ma_khach))
+            cur.execute(chuyen_status,(ma_chuyen,))
             conn.commit()
     finally:
         conn.close()

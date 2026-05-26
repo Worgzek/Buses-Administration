@@ -49,7 +49,7 @@ CREATE TABLE CHUYEN_XE (
     MaXe VARCHAR(10) REFERENCES XE_BUS(MaXe) ON DELETE CASCADE,
     MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen),
     MaTaiXe VARCHAR(10) REFERENCES TAI_XE(MaTaiXe),
-    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng' CHECK (TrangThai IN ('Sẵn sàng', 'Đang chạy', 'Hủy'))
+    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng' CHECK (TrangThai IN ('Sẵn sàng', 'Đang hoạt động', 'Hủy'))
 );
 
 CREATE TABLE VE (

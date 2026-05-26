@@ -21,7 +21,7 @@ async function loadChuyenXe() {
             const time = thoiGian ? thoiGian.substring(0, 23) : 'N/A';
 
             let statusClass = '';
-            if (trangThai.includes('Đang chạy') || trangThai.includes('Đang chạy')) statusClass = 'bg-warning-subtle text-warning';
+            if (trangThai.includes('Đang hoạt động') || trangThai.includes('Đang hoạt động')) statusClass = 'bg-warning-subtle text-warning';
             else if (trangThai === 'Sẵn sàng') statusClass = 'bg-success-subtle text-success';
             else if (trangThai === 'Hủy') statusClass = 'bg-danger-subtle text-danger';
             else statusClass = 'bg-secondary-subtle text-secondary';
