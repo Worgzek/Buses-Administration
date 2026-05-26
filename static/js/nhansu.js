@@ -79,7 +79,7 @@ function loadTaiXe() {
 
 
                 let statusClass = '';
-                if (trangThai.includes('chạy')) {
+                if (trangThai.includes('Đang hoạt động')) {
                     statusClass = 'bg-warning-subtle text-warning'; // Màu vàng nhạt
                 } else if (trangThai === 'Sẵn sàng') {
                     statusClass = 'bg-success-subtle text-success'; // Màu xanh nhạt

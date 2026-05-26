@@ -157,6 +157,12 @@ def edit_xe_route(ma):
         return jsonify({"status": "error", "message": f"Lỗi server: {str(e)}"}), 500
   
 #---Nhan vien &ttai xe
+@app.route('/api/tai-xe-available', methods=['GET'])
+def api_tai_xe_available():
+    ma_chuyen = request.args.get('maChuyen')
+    data = db.get_tai_xe_available(ma_chuyen)
+    result = [{"ma": r[0], "ten": r[1]} for r in data]
+    return jsonify(result), 200
 
 @app.route('/api/nhanvien', methods=['GET'])
 def get_nhan_vien():

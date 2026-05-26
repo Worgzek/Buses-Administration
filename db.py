@@ -428,6 +428,35 @@ def update_nv(ma, ten, sdt, chucvu, maben):
     finally:
         conn.close()
 
+def get_tai_xe_available(ma_chuyen_dang_sua=None):
+    conn = get_db_connection()
+    try:
+        with conn.cursor() as cur:
+            # Câu lệnh SQL lọc "sạch"
+            sql = '''
+                SELECT MaTaiXe, TenTaiXe 
+                FROM TAI_XE 
+                WHERE TrangThai = 'Sẵn sàng' 
+                AND MaTaiXe NOT IN (
+                    SELECT MaTaiXe 
+                    FROM CHUYEN_XE 
+                    WHERE TrangThai IN ('Sẵn sàng', 'Đang hoạt động')
+                    AND MaTaiXe IS NOT NULL
+                    '''
+            
+            # Nếu đang Sửa, thì cho phép hiện lại ông tài xế của chính chuyến đó
+            if ma_chuyen_dang_sua:
+                sql += " AND MaChuyen != %s"
+                sql += ")"
+                cur.execute(sql, (ma_chuyen_dang_sua,))
+            else:
+                sql += ")"
+                cur.execute(sql)
+                
+            return cur.fetchall()
+    finally:
+        conn.close()
+
 #-----CCHUYEN XE------
 
 def get_all_route():
@@ -440,8 +469,8 @@ def get_all_route():
             ,tx.TenTaiXe
             ,c.TrangThai
             from CHUYEN_XE c
-            join XE_BUS x on c.MaXe = x.MaXe
-            join TUYEN_XE t on c.MaTuyen = t.MaTuyen
+            left join XE_BUS x on c.MaXe = x.MaXe
+            left join TUYEN_XE t on c.MaTuyen = t.MaTuyen
             left join TAI_XE tx ON c.MaTaiXe = tx.MaTaiXe
             order by c.MaChuyen ASC
             '''
@@ -524,8 +553,8 @@ def get_chuyen_active():
     query = '''
         SELECT c.MaChuyen, t.TenTuyen, TO_CHAR(c.ThoiGianKhoiHanh, 'YYYY-MM-DD HH24:MI'), t.GiaVe, xe.SoCho
         FROM CHUYEN_XE c
-        JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
-        JOIN XE_BUS xe ON c.MaXe = xe.MaXe
+        left JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
+        left JOIN XE_BUS xe ON c.MaXe = xe.MaXe
         WHERE c.TrangThai IN ('Sẵn sàng', 'Đang hoạt động')
         order by c.MaChuyen ASC
     '''
@@ -537,7 +566,6 @@ def get_chuyen_active():
     finally:
         conn.close()
 
-# Kiểm tra khách hàng theo SĐT (Để tránh tạo trùng)
 def get_khach_by_sdt(sdt):
     query = "SELECT MaHanhKhach, TenHanhKhach FROM HANH_KHACH WHERE SoDienThoai = %s"
     conn = get_db_connection()
@@ -567,11 +595,18 @@ def insert_ve(ma_ve, gia, ma_chuyen, ma_khach):
             SET TrangThai = 'Đang hoạt động' 
             WHERE MaChuyen = %s AND TrangThai = 'Sẵn sàng'
     '''
+    taixe_status = '''
+        UPDATE TAI_XE 
+        SET TrangThai = 'Đang hoạt động'
+        WHERE MaTaiXe = (SELECT MaTaiXe FROM CHUYEN_XE WHERE MaChuyen = %s)
+    '''
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
             cur.execute(query, (ma_ve, gia, ma_chuyen, ma_khach))
             cur.execute(chuyen_status,(ma_chuyen,))
+            cur.execute(taixe_status,(ma_chuyen,))
+
             conn.commit()
     finally:
         conn.close()

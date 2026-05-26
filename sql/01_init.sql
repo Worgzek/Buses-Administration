@@ -9,7 +9,7 @@ CREATE TABLE TAI_XE (
     TenTaiXe VARCHAR(100) NOT NULL,
     SoDienThoai VARCHAR(15),
     BangLai VARCHAR(50) DEFAULT 'Hạng E',
-    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng'
+    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng' CHECK (TrangThai IN ('Sẵn sàng', 'Đang hoạt động', 'Nghỉ'))
 
 );
 

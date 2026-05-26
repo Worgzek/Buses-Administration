@@ -14,13 +14,11 @@ async function loadChuyenActive() {
         select.innerHTML = '<option value="">-- Chọn Chuyến Xe --</option>';
         
         data.forEach(c => {
-            // Định dạng giờ: "gio" từ app.py đang là chuỗi hoặc đối tượng datetime
-            // Chúng ta lấy giờ:phút ngày/tháng
+
             const dateObj = new Date(c.gio);
             const timeString = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
             const dateString = dateObj.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
 
-            // Tạo option với các thuộc tính data-* để dễ lấy lại khi bán vé
             select.innerHTML += `
                 <option value="${c.ma}" 
                         data-tuyen="${c.tuyen}" 
@@ -67,7 +65,7 @@ async function loadRecentTickets() {
             <td>${ve.tuyen}</td>
             <td>${ve.gia} VNĐ</td>
             <td>
-                <button class="btn btn-sm btn-light text-danger" onclick="deleteXe('${ve.maVe}')">
+                <button class="btn btn-sm btn-light text-danger" onclick="xoaVe('${ve.maVe}')">
                     <i class="fas fa-trash"></i>
                 </button>            
             </td>
