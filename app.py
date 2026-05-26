@@ -330,7 +330,6 @@ def api_ban_ve():
     gia = req.get('gia')
 
     try:
-        # 1. Kiểm tra/Thêm khách hàng
         khach = db.get_khach_by_sdt(sdt)
         ma_khach = khach[0] if khach else "KH" + sdt[-4:]
         if not khach:
@@ -370,6 +369,16 @@ def api_xoa_ve(ma_ve):
         if db.xoa_ve(ma_ve):
             return jsonify({"message": "Đã xóa vé thành công!"}), 200
         return jsonify({"error": "Không tìm thấy vé!"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/xe-theo-tuyen/<ma_tuyen>', methods=['GET'])
+def api_get_xe_theo_tuyen(ma_tuyen):
+    try:
+        # Gọi hàm từ db.py
+        xes = db.get_xe_by_tuyen(ma_tuyen)
+        return jsonify(xes), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

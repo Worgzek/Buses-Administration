@@ -31,7 +31,7 @@ CREATE TABLE XE_BUS (
     MaXe VARCHAR(10) PRIMARY KEY,
     BienSo VARCHAR(20) UNIQUE NOT NULL,
     SoCho INTEGER CHECK (SoCho > 0),
-    TrangThai VARCHAR(50) DEFAULT 'Chưa gán tuyến' CHECK (TrangThai IN ('Sẵn sàng', 'Đang hoạt động', 'Bảo trì', 'Chưa gán tuyến')),
+    TrangThai VARCHAR(50) DEFAULT 'Sẵn sàng' CHECK (TrangThai IN ('Sẵn sàng', 'Đang hoạt động', 'Bảo trì', 'Chưa gán tuyến')),
     MaTuyen VARCHAR(20) REFERENCES TUYEN_XE(MaTuyen) ON DELETE SET NULL
 );
 

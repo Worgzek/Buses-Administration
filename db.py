@@ -647,28 +647,52 @@ def tru_cho_ngoi(maChuyen):
     finally:
         conn.close()
 
-# db.py
 def xoa_ve(ma_ve):
-    tim_chuyen='''
-                SELECT MaChuyen FROM VE WHERE MaVe = %s
-                '''
-    del_ve='''
-            DELETE FROM VE WHERE MaVe = %s
-            '''
-    update_cho='''UPDATE XE_BUS 
-                SET SoCho = SoCho + 1 
-                WHERE MaXe = (SELECT MaXe FROM CHUYEN_XE WHERE MaChuyen = %s)
-                '''
+    tim_chuyen = "SELECT MaChuyen FROM VE WHERE MaVe = %s"
+    del_ve = "DELETE FROM VE WHERE MaVe = %s"
+    update_cho = """UPDATE XE_BUS 
+                    SET SoCho = SoCho + 1 
+                    WHERE MaXe = (SELECT MaXe FROM CHUYEN_XE WHERE MaChuyen = %s)"""
+    check_ve = "SELECT COUNT(*) FROM VE WHERE MaChuyen = %s"
+    update_chuyen = "UPDATE CHUYEN_XE SET TrangThai = 'Sẵn sàng' WHERE MaChuyen = %s"
+
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
+            # 1. Lấy mã chuyến
             cur.execute(tim_chuyen, (ma_ve,))
             res = cur.fetchone()
             if not res: return False
-            ma_chuyen = res[0]            
+            ma_chuyen = res[0]
+            
+            # 2. Xóa vé và cập nhật số chỗ
             cur.execute(del_ve, (ma_ve,))
-            cur.execute(update_cho, (ma_chuyen,))            
+            cur.execute(update_cho, (ma_chuyen,))
+            
+            # 3. Kiểm tra xem còn vé nào không
+            cur.execute(check_ve, (ma_chuyen,))
+            count = cur.fetchone()[0]
+            
+            # 4. Nếu hết vé, tự động mở chuyến
+            if count == 0:
+                cur.execute(update_chuyen, (ma_chuyen,))
+            
             conn.commit()
             return True
+    except Exception as e:
+        conn.rollback()
+        raise e
     finally:
         conn.close()
+
+def get_xe_by_tuyen(ma_tuyen):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Chỉ lấy xe thuộc tuyến này và trạng thái là 'Sẵn sàng'
+    query = "SELECT MaXe, BienSo FROM XE_BUS WHERE MaTuyen = %s AND TrangThai = 'Sẵn sàng'"
+    cursor.execute(query, (ma_tuyen,))
+    xes = cursor.fetchall()
+    conn.close()
+    
+    # Chuyển đổi thành danh sách dict để trả về JSON
+    return [{"MaXe": x[0], "BienSo": x[1]} for x in xes]

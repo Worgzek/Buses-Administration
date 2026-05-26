@@ -18,7 +18,7 @@ async function loadChuyenXe() {
                     const taiXe = c[4] || 'Chưa cập nhật';
                     const trangThai = c[5] || 'Chưa cập nhật';
                     
-                    const time = thoiGian ? thoiGian.substring(0, 23) : 'N/A';
+                    const time = thoiGian ? thoiGian.substring(0, 22) : 'N/A';
 
                     // Kiểm tra trạng thái để khóa nút
                     const isLocked = (trangThai === 'Đang hoạt động');
@@ -60,48 +60,65 @@ async function loadChuyenXe() {
 
 async function initChuyenForm(maChuyenDangSua = null) {
     try {
-        // Nếu đang sửa chuyến, truyền thêm mã chuyến để vẫn hiện tài xế hiện tại của chuyến đó
-        const urlTaiXe = maChuyenDangSua 
-            ? `/api/tai-xe-available?maChuyen=${maChuyenDangSua}` 
-            : '/api/tai-xe-available';
-
-        const [resTuyen, resXe, resTaiXe] = await Promise.all([
-            fetch('/api/tuyenxe'),
-            fetch('/api/xe'),
-            fetch(urlTaiXe) // Sử dụng API lọc tài xế khả dụng
+        // 1. Fetch Tuyến và Tài xế (Xe sẽ load theo Tuyến sau)
+        const [resTuyen, resTaiXeFull] = await Promise.all([
+            fetch('/api/tuyenxe'), 
+            fetch('/api/tai-xe-available')
         ]);
+        
+        // 2. Xử lý tài xế cho form Edit
+        let taixesEdit = [];
+        if (maChuyenDangSua) {
+            const resTaiXeEdit = await fetch(`/api/tai-xe-available?maChuyen=${maChuyenDangSua}`);
+            taixesEdit = await resTaiXeEdit.json();
+        }
 
-        const data = await Promise.all([resTuyen.json(), resXe.json(), resTaiXe.json()]);
-        
-        // 1. Tuyến và Xe (Giữ nguyên)
-        const tuyens = data[0].map(t => ({ id: t[0], name: t[1] }));
-        const xes = data[1].map(x => ({ id: x[0], name: x[1] }));
-        
-        // 2. Tài xế (Dữ liệu từ API lọc có cấu trúc {ma, ten})
-        const taixes = data[2]; 
+        const tuyens = (await resTuyen.json()).map(t => ({ id: t[0], name: t[1] }));
+        const taixesFull = await resTaiXeFull.json();
+        if (!maChuyenDangSua) taixesEdit = taixesFull;
 
         const populateSelect = (elementId, list, prefix) => {
             const el = document.getElementById(elementId);
-            if (!el) return; // Tránh lỗi nếu element không tồn tại trên trang hiện tại
-            
+            if (!el) return;
             let html = `<option value="">--Chọn--</option>`;            
             html += list.map(item => 
                 `<option value="${item.id || item.ma}">${prefix ? (item.id || item.ma) + ' - ' : ''}${item.name || item.ten}</option>`
             ).join('');
-            
             el.innerHTML = html;
         };
 
-        // Đổ dữ liệu cho Form Thêm
+        // Đổ dữ liệu
         populateSelect('cx-tuyen', tuyens, true);
-        populateSelect('cx-xe', xes, false);
-        populateSelect('cx-taixe', taixes, false);
-
-        // Đổ dữ liệu cho Form Sửa
+        populateSelect('cx-taixe', taixesFull, false);
         populateSelect('edit-cx-tuyen', tuyens, true);
-        populateSelect('edit-cx-xe', xes, false);
-        populateSelect('edit-cx-taixe', taixes, false);
-        
+        populateSelect('edit-cx-taixe', taixesEdit, false);
+
+// Thay vì addEventListener, ta gán trực tiếp vào thuộc tính onchange
+        const bindXeEvent = (tuyenId, xeId) => {
+            const el = document.getElementById(tuyenId);
+            
+            el.onchange = async function() {
+                const maTuyen = this.value;
+                const xeSelect = document.getElementById(xeId);
+                
+                // Luôn luôn reset sạch sẽ bằng cách gán lại từ đầu
+                xeSelect.innerHTML = '<option value="">--Chọn--</option>';
+                
+                if (!maTuyen) return;
+
+                const res = await fetch(`/api/xe-theo-tuyen/${maTuyen}`);
+                const xes = await res.json();
+                
+                // Đổ dữ liệu vào
+                xeSelect.innerHTML += xes.map(x => 
+                    `<option value="${x.MaXe}">${x.BienSo}</option>`
+                ).join('');
+            };
+        };
+
+        bindXeEvent('cx-tuyen', 'cx-xe');
+        bindXeEvent('edit-cx-tuyen', 'edit-cx-xe');
+
     } catch (e) {
         console.error("Lỗi khởi tạo form:", e);
     }
@@ -161,38 +178,48 @@ async function handleAddChuyen() {
         alert("Có lỗi xảy ra khi kết nối tới server!");
     }
 }
-
 async function editChuyen(ma) {
     try {
-        // 1. REFRESH danh sách tài xế khả dụng cho chuyến này TRƯỚC
-        // Phải có await ở đây để các <option> được tạo xong xuôi đã
-        await initChuyenForm(ma); 
-
-        // 2. Sau khi dropbox đã có "ruột" mới, ta mới đi lấy dữ liệu chuyến xe
+        // 1. Lấy dữ liệu chuyến
         const res = await fetch(`/api/chuyen/${ma}`);
-        const data = await res.json(); 
-        console.log("Dữ liệu chuyến xe hiện tại:", data);
+        const data = await res.json();
+        const taiXeCu = data[4];
+        const maTuyen = data[3]; // Lấy tuyến của chuyến cũ
+        const maXe = data[2];    // Lấy xe của chuyến cũ
 
-        // 3. Gán dữ liệu vào form
+        // 2. Nạp form (Tuyến, Tài xế đã có sẵn)
+        await initChuyenForm(ma);
+
+        // 3. ĐẶC BIỆT: Load lại danh sách xe của tuyến đó ngay lập tức
+        const resXe = await fetch(`/api/xe-theo-tuyen/${maTuyen}`);
+        const xes = await resXe.json();
+        
+        const selectXe = document.getElementById('edit-cx-xe');
+        selectXe.innerHTML = '<option value="">--Chọn--</option>' + 
+            xes.map(x => `<option value="${x.MaXe}">${x.BienSo}</option>`).join('');
+
+        // 4. Xử lý tài xế cũ (giữ nguyên logic của bạn)
+        const selectTX = document.getElementById('edit-cx-taixe');
+        if (!Array.from(selectTX.options).some(o => o.value === taiXeCu) && taiXeCu) {
+            let opt = document.createElement('option');
+            opt.value = taiXeCu;
+            opt.text = "Tài xế hiện tại: " + taiXeCu; 
+            selectTX.appendChild(opt);
+        }
+
+        // 5. Gán dữ liệu (Bây giờ dropdown Xe đã có dữ liệu rồi nên sẽ chọn được)
         document.getElementById('edit-cx-ma').value = data[0];
         document.getElementById('display-ma-chuyen').innerText = data[0];
-        document.getElementById('edit-cx-thoigian').value = data[1];    
-        document.getElementById('edit-cx-xe').value = data[2];
-        document.getElementById('edit-cx-tuyen').value = data[3];
+        document.getElementById('edit-cx-thoigian').value = data[1];
+        document.getElementById('edit-cx-tuyen').value = maTuyen;
+        document.getElementById('edit-cx-xe').value = maXe; // Bây giờ dòng này mới chạy đúng!
+        document.getElementById('edit-cx-taixe').value = taiXeCu;
 
-        // 4. Lúc này gán giá trị cho tài xế chắc chắn sẽ ăn vì option đã tồn tại
-        const selectTaiXe = document.getElementById('edit-cx-taixe');
-        selectTaiXe.value = data[4]; 
-
-        // 5. Cuối cùng mới hiện Modal
         new bootstrap.Modal(document.getElementById('editChuyenModal')).show();
-        
     } catch (e) {
-        console.error("Lỗi khi fetch dữ liệu sửa:", e);
-        alert("Có lỗi xảy ra khi tải dữ liệu sửa chuyến!");
+        console.error("Lỗi:", e);
     }
 }
-
 async function submitEditChuyen() {
     const ma = document.getElementById('edit-cx-ma').value;
     const selectTX = document.getElementById('edit-cx-taixe');
