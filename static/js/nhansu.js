@@ -77,16 +77,18 @@ function loadTaiXe() {
                 const bangLai = tx.BangLai || tx[3] || 'N/A';
                 const trangThai = tx.TrangThai || tx[4] || 'Sẵn sàng';
 
+                // 1. Xác định trạng thái khóa
+                const isLocked = trangThai.includes('Đang hoạt động');
 
                 let statusClass = '';
-                if (trangThai.includes('Đang hoạt động')) {
-                    statusClass = 'bg-warning-subtle text-warning'; // Màu vàng nhạt
+                if (isLocked) {
+                    statusClass = 'bg-warning-subtle text-warning';
                 } else if (trangThai === 'Sẵn sàng') {
-                    statusClass = 'bg-success-subtle text-success'; // Màu xanh nhạt
+                    statusClass = 'bg-success-subtle text-success';
                 } else if (trangThai === 'Nghỉ') {
-                    statusClass = 'bg-danger-subtle text-danger';   // Màu đỏ nhạt
+                    statusClass = 'bg-danger-subtle text-danger';
                 } else {
-                    statusClass = 'bg-secondary-subtle text-secondary'; // Màu xám nhạt
+                    statusClass = 'bg-secondary-subtle text-secondary';
                 }
 
                 const row = document.createElement('tr');
@@ -106,10 +108,15 @@ function loadTaiXe() {
                         <span class="badge ${statusClass} px-3">${trangThai}</span>
                     </td>
                     <td class="text-center align-middle">
-                        <button class="btn btn-sm btn-light text-primary me-2" onclick="editTaiXe('${ma}')">
-                            <i class="fas fa-edit"></i>
+                        <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-primary'} me-2" 
+                                onclick="${isLocked ? '' : `editTaiXe('${ma}')`}"
+                                ${isLocked ? 'disabled title="Tài xế đang hoạt động, không thể sửa"' : ''}>
+                            <i class="fas ${isLocked ? 'fa-lock' : 'fa-edit'}"></i>
                         </button>
-                        <button class="btn btn-sm btn-light text-danger" onclick="deleteTaiXe('${ma}')">
+                        
+                        <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-danger'}" 
+                                onclick="${isLocked ? '' : `deleteTaiXe('${ma}')`}"
+                                ${isLocked ? 'disabled title="Tài xế đang hoạt động, không thể xóa"' : ''}>
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>

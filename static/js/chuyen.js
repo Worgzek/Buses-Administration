@@ -11,47 +11,55 @@ async function loadChuyenXe() {
         tbody.innerHTML = ''; 
 
         data.forEach(c => {
-                    const ma = c[0]; 
-                    const thoiGian = c[1];
-                    const bienSo = c[2];
-                    const tenTuyen = c[3];
-                    const taiXe = c[4] || 'Chưa cập nhật';
-                    const trangThai = c[5] || 'Chưa cập nhật';
+            const ma = c[0]; 
+            const thoiGian = c[1];
+            const bienSo = c[2];
+            const tenTuyen = c[3];
+            const taiXe = c[4] || 'Chưa cập nhật';
+            const trangThai = c[5] || 'Chưa cập nhật';
+            
+            // SỬA LỖI Ở ĐÂY: Dùng 'c' thay vì 'item'
+            const choConLai = c[6]; 
+            
+            const time = thoiGian ? thoiGian.substring(0, 16) : 'N/A'; // Sửa substring thành 16 cho đẹp giờ
+
+            const isLocked = (trangThai === 'Đang hoạt động');
+            
+            // Logic hiển thị chỗ ngồi
+            let choDisplay = (choConLai <= 0) 
+                ? '<span class="text-danger fw-bold">Hết chỗ</span>' 
+                : `<span class="text-primary fw-bold">${choConLai}</span>`;
+
+            let statusClass = '';
+            if (trangThai === 'Đang hoạt động') statusClass = 'bg-warning-subtle text-warning';
+            else if (trangThai === 'Sẵn sàng') statusClass = 'bg-success-subtle text-success';
+            else if (trangThai === 'Hủy') statusClass = 'bg-danger-subtle text-danger';
+            else statusClass = 'bg-secondary-subtle text-secondary';
+
+            const row = `<tr>
+                <td><span class="fw-bold text-primary">${ma}</span></td>
+                <td>${time}</td>
+                <td><span class="badge bg-dark px-2">${bienSo}</span></td>
+                <td>${tenTuyen}</td>
+                <td>${taiXe}</td>
+                <td>${choDisplay}</td>
+                <td><span class="badge ${statusClass} px-3">${trangThai}</span></td>
+                <td class="text-center">
+                    <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-primary'} me-2" 
+                            onclick="${isLocked ? '' : `editChuyen('${ma}')`}" 
+                            ${isLocked ? 'disabled title="Chuyến đang hoạt động, không thể sửa"' : ''}>
+                        <i class="fas ${isLocked ? 'fa-lock' : 'fa-edit'}"></i>
+                    </button>
                     
-                    const time = thoiGian ? thoiGian.substring(0, 22) : 'N/A';
-
-                    // Kiểm tra trạng thái để khóa nút
-                    const isLocked = (trangThai === 'Đang hoạt động');
-
-                    let statusClass = '';
-                    if (trangThai === 'Đang hoạt động') statusClass = 'bg-warning-subtle text-warning';
-                    else if (trangThai === 'Sẵn sàng') statusClass = 'bg-success-subtle text-success';
-                    else if (trangThai === 'Hủy') statusClass = 'bg-danger-subtle text-danger';
-                    else statusClass = 'bg-secondary-subtle text-secondary';
-
-                    const row = `<tr>
-                        <td><span class="fw-bold text-primary">${ma}</span></td>
-                        <td>${time}</td>
-                        <td><span class="badge bg-dark px-2">${bienSo}</span></td>
-                        <td>${tenTuyen}</td>
-                        <td>${taiXe}</td>
-                        <td><span class="badge ${statusClass} px-3">${trangThai}</span></td>
-                        <td class="text-center">
-                            <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-primary'} me-2" 
-                                    onclick="${isLocked ? '' : `editChuyen('${ma}')`}" 
-                                    ${isLocked ? 'disabled title="Chuyến đang hoạt động, không thể sửa"' : ''}>
-                                <i class="fas ${isLocked ? 'fa-lock' : 'fa-edit'}"></i>
-                            </button>
-                            
-                            <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-danger'}" 
-                                    onclick="${isLocked ? '' : `deleteChuyen('${ma}')`}"
-                                    ${isLocked ? 'disabled title="Chuyến đang hoạt động, không thể xóa"' : ''}>
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-                    tbody.innerHTML += row;
-                });
+                    <button class="btn btn-sm ${isLocked ? 'btn-outline-secondary' : 'btn-light text-danger'}" 
+                            onclick="${isLocked ? '' : `deleteChuyen('${ma}')`}"
+                            ${isLocked ? 'disabled title="Chuyến đang hoạt động, không thể xóa"' : ''}>
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
         console.log("Đổ dữ liệu hoàn tất!");
     } catch (e) {
         console.error("Lỗi xảy ra trong loadChuyenXe:", e);

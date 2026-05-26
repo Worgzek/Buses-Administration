@@ -349,18 +349,17 @@ def api_ban_ve():
 @app.route('/api/ve', methods=['GET'])
 def get_ve_list():
     data = db.get_all_ve()
-    print("Dữ liệu nhận được:", data) 
-    
     result = []
     for v in data:
         result.append({
             "maVe": v[0],
-            "gia": v[1],
+            "gia": str(v[1]),      # Decimal cần convert sang string để JSONify hiểu
             "tuyen": v[2],
-            "tenKhach": v[3] 
+            "tenKhach": v[3],      # v.TenHanhKhach
+            "maChuyen": v[4],
+            "thoiGian": str(v[5])  # Date/Datetime cần convert sang string
         })
     return jsonify(result), 200
-
 
 # app.py
 @app.route('/api/ve/<ma_ve>', methods=['DELETE'])

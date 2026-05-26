@@ -461,18 +461,24 @@ def get_tai_xe_available(ma_chuyen_dang_sua=None):
 
 def get_all_route():
     query = '''
-            Select 
-            c.MaChuyen
-            ,c.ThoiGianKhoiHanh
-            ,x.BienSo
-            ,t.TenTuyen
-            ,tx.TenTaiXe
-            ,c.TrangThai
-            from CHUYEN_XE c
-            left join XE_BUS x on c.MaXe = x.MaXe
-            left join TUYEN_XE t on c.MaTuyen = t.MaTuyen
-            left join TAI_XE tx ON c.MaTaiXe = tx.MaTaiXe
-            order by c.MaChuyen ASC
+            SELECT 
+                c.MaChuyen
+                ,c.ThoiGianKhoiHanh
+                ,x.BienSo
+                ,t.TenTuyen
+                ,tx.TenTaiXe
+                ,c.TrangThai
+                , (x.SoCho - COALESCE(v_count.da_ban, 0)) as ChoConLai
+            FROM CHUYEN_XE c
+            LEFT JOIN XE_BUS x ON c.MaXe = x.MaXe
+            LEFT JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
+            LEFT JOIN TAI_XE tx ON c.MaTaiXe = tx.MaTaiXe
+            LEFT JOIN (
+                SELECT MaChuyen, COUNT(*) as da_ban 
+                FROM VE 
+                GROUP BY MaChuyen
+            ) v_count ON c.MaChuyen = v_count.MaChuyen
+            ORDER BY c.MaChuyen ASC
             '''
     conn = get_db_connection()
     try:
@@ -613,11 +619,18 @@ def insert_ve(ma_ve, gia, ma_chuyen, ma_khach):
 
 def get_all_ve():
     query = '''
-        SELECT v.MaVe, v.GiaVe, t.TenTuyen, k.TenHanhKhach 
+        SELECT 
+            v.MaVe, 
+            v.GiaVe, 
+            t.TenTuyen, 
+            h.TenHanhKhach,
+            c.MaChuyen, 
+            c.ThoiGianKhoiHanh
         FROM VE v
         JOIN CHUYEN_XE c ON v.MaChuyen = c.MaChuyen
         JOIN TUYEN_XE t ON c.MaTuyen = t.MaTuyen
-        JOIN HANH_KHACH k ON v.MaHanhKhach = k.MaHanhKhach
+        JOIN HANH_KHACH h ON v.MaHanhKhach = h.MaHanhKhach -- JOIN thêm bảng này
+        ORDER BY v.MaVe DESC
     '''
     conn = get_db_connection()
     try:
@@ -655,27 +668,29 @@ def xoa_ve(ma_ve):
                     WHERE MaXe = (SELECT MaXe FROM CHUYEN_XE WHERE MaChuyen = %s)"""
     check_ve = "SELECT COUNT(*) FROM VE WHERE MaChuyen = %s"
     update_chuyen = "UPDATE CHUYEN_XE SET TrangThai = 'Sẵn sàng' WHERE MaChuyen = %s"
+    
+
+    release_taixe = """UPDATE TAI_XE 
+                       SET TrangThai = 'Sẵn sàng' 
+                       WHERE MaTaiXe = (SELECT MaTaiXe FROM CHUYEN_XE WHERE MaChuyen = %s)"""
 
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            # 1. Lấy mã chuyến
             cur.execute(tim_chuyen, (ma_ve,))
             res = cur.fetchone()
             if not res: return False
             ma_chuyen = res[0]
             
-            # 2. Xóa vé và cập nhật số chỗ
             cur.execute(del_ve, (ma_ve,))
             cur.execute(update_cho, (ma_chuyen,))
             
-            # 3. Kiểm tra xem còn vé nào không
             cur.execute(check_ve, (ma_chuyen,))
             count = cur.fetchone()[0]
             
-            # 4. Nếu hết vé, tự động mở chuyến
             if count == 0:
                 cur.execute(update_chuyen, (ma_chuyen,))
+                cur.execute(release_taixe, (ma_chuyen,))
             
             conn.commit()
             return True
@@ -688,11 +703,9 @@ def xoa_ve(ma_ve):
 def get_xe_by_tuyen(ma_tuyen):
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Chỉ lấy xe thuộc tuyến này và trạng thái là 'Sẵn sàng'
     query = "SELECT MaXe, BienSo FROM XE_BUS WHERE MaTuyen = %s AND TrangThai = 'Sẵn sàng'"
     cursor.execute(query, (ma_tuyen,))
     xes = cursor.fetchall()
     conn.close()
     
-    # Chuyển đổi thành danh sách dict để trả về JSON
     return [{"MaXe": x[0], "BienSo": x[1]} for x in xes]

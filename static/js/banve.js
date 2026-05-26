@@ -58,13 +58,20 @@ async function loadRecentTickets() {
     tableBody.innerHTML = '';
 
     data.forEach(ve => { 
+        // Lấy thời gian rút gọn (nếu cần)
+        const time = ve.thoiGian ? ve.thoiGian.substring(0, 16) : 'N/A';
+        
         const row = document.createElement('tr');
         row.innerHTML = `
             <td><span class="fw-bold text-primary">${ve.maVe}</span></td>
             <td>${ve.tenKhach}</td>
-            <td>${ve.tuyen}</td>
-            <td>${ve.gia} VNĐ</td>
             <td>
+                <div class="fw-bold text-dark">${ve.maChuyen || 'N/A'}</div>
+                <div class="small text-muted">${time}</div>
+            </td>
+            <td>${ve.tuyen}</td>
+            <td>${ve.gia.toLocaleString('vi-VN')} VNĐ</td>
+            <td class="text-center">
                 <button class="btn btn-sm btn-light text-danger" onclick="xoaVe('${ve.maVe}')">
                     <i class="fas fa-trash"></i>
                 </button>            
@@ -73,7 +80,6 @@ async function loadRecentTickets() {
         tableBody.appendChild(row);
     });
 }
-
 async function submitTicket() {
     const selectChuyen = document.getElementById('ticket-chuyen');
     const selectedOption = selectChuyen.options[selectChuyen.selectedIndex];
