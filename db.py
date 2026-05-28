@@ -713,12 +713,9 @@ def get_xe_by_tuyen(ma_tuyen):
 # db.py
 
 def get_dashboard_stats():
-    # Các câu truy vấn PostgreSQL
     q_doanh_thu = '''SELECT SUM(GiaVe) FROM VE'''
     q_dang_hoat_dong = '''SELECT COUNT(*) FROM CHUYEN_XE WHERE TrangThai = 'Đang hoạt động' '''
     q_tong_khach = '''SELECT COUNT(*) FROM VE'''
-    
-    # Dùng CURRENT_DATE cho PostgreSQL
     q_chuyen_hom_nay = '''SELECT COUNT(*) FROM CHUYEN_XE WHERE ThoiGianKhoiHanh::date = CURRENT_DATE'''
     
     q_top_tuyen = '''

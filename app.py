@@ -334,13 +334,12 @@ def api_ban_ve():
         ma_khach = khach[0] if khach else "KH" + sdt[-4:]
         if not khach:
             db.insert_khach(ma_khach, ten, sdt)
-            
+
+        count = len(db.get_all_ve())
+        ma_ve = f"V{str(count + 1).zfill(2)}"        
         if not db.tru_cho_ngoi(maChuyen):
-            return jsonify({"error": "Đã hết chỗ hoặc chuyến không tồn tại!"}), 400
-            
-        ma_ve = "VE" + str(uuid.uuid4().hex[:6].upper())
-        db.insert_ve(ma_ve, gia, maChuyen, ma_khach)
-        
+            return jsonify({"error": "Đã hết chỗ hoặc chuyến không tồn tại!"}), 400           
+        db.insert_ve(ma_ve, gia, maChuyen, ma_khach)     
         return jsonify({"message": "Bán vé thành công!", "maVe": ma_ve}), 200
         
     except Exception as e:
@@ -353,15 +352,14 @@ def get_ve_list():
     for v in data:
         result.append({
             "maVe": v[0],
-            "gia": str(v[1]),      # Decimal cần convert sang string để JSONify hiểu
+            "gia": str(v[1]),
             "tuyen": v[2],
-            "tenKhach": v[3],      # v.TenHanhKhach
+            "tenKhach": v[3],
             "maChuyen": v[4],
-            "thoiGian": str(v[5])  # Date/Datetime cần convert sang string
+            "thoiGian": str(v[5])
         })
     return jsonify(result), 200
 
-# app.py
 @app.route('/api/ve/<ma_ve>', methods=['DELETE'])
 def api_xoa_ve(ma_ve):
     try:
@@ -375,14 +373,11 @@ def api_xoa_ve(ma_ve):
 @app.route('/api/xe-theo-tuyen/<ma_tuyen>', methods=['GET'])
 def api_get_xe_theo_tuyen(ma_tuyen):
     try:
-        # Gọi hàm từ db.py
         xes = db.get_xe_by_tuyen(ma_tuyen)
         return jsonify(xes), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-# app.py
-
 @app.route('/api/dashboard', methods=['GET'])
 def dashboard_api():
     try:

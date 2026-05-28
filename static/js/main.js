@@ -74,16 +74,12 @@ async function loadDashboard() {
         const response = await fetch('/api/dashboard');
         const data = await response.json();
 
-        // Cập nhật số liệu vào HTML
-        document.getElementById('stat-doanh-thu').innerText = 
-            data.doanhThu.toLocaleString('vi-VN') + ' VNĐ';
+        document.getElementById('stat-doanh-thu').innerText =  data.doanhThu.toLocaleString('vi-VN') + ' VNĐ';
         document.getElementById('stat-dang-chay').innerText = data.dangHoatDong;
         document.getElementById('stat-khach').innerText = data.tongKhach;
         
-        // CẬP NHẬT ID MỚI Ở ĐÂY
         document.getElementById('stat-chuyen-hom-nay').innerText = data.chuyenHomNay;
 
-        // Cập nhật Top 5 tuyến
         const list = document.getElementById('top-tuyen-list');
         list.innerHTML = data.topTuyen.map(t => `
             <li class="list-group-item d-flex justify-content-between">
@@ -91,8 +87,6 @@ async function loadDashboard() {
                 <span class="badge bg-primary rounded-pill">${t.value} vé</span>
             </li>
         `).join('');
-
-        // Cập nhật biểu đồ
         updateChart(data.topTuyen);
         
     } catch (e) {
@@ -100,25 +94,24 @@ async function loadDashboard() {
     }
 }
 
-let myChart = null; // Biến toàn cục để lưu instance của biểu đồ
+let myChart = null;
 
 function updateChart(topTuyen) {
     const ctx = document.getElementById('myChart').getContext('2d');
     
-    // Hủy biểu đồ cũ nếu đã tồn tại để tránh lỗi "hồ sơ đã tồn tại"
     if (myChart) {
         myChart.destroy();
     }
     
     // Vẽ mới
     myChart = new Chart(ctx, {
-        type: 'bar', // Kiểu biểu đồ cột
+        type: 'bar',
         data: {
             labels: topTuyen.map(t => t.name), // Tên tuyến
             datasets: [{
                 label: 'Số lượng vé đã bán',
                 data: topTuyen.map(t => t.value), // Số vé
-                backgroundColor: '#0d6efd', // Màu xanh Bootstrap
+                backgroundColor: '#0d6efd',
                 borderRadius: 5
             }]
         },

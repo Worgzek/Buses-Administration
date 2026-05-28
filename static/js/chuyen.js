@@ -19,7 +19,7 @@ async function loadChuyenXe() {
             const trangThai = c[5] || 'Chưa cập nhật';
             const choConLai = c[6]; 
             
-            const time = thoiGian ? thoiGian.substring(0, 23) : 'N/A';
+            const time = thoiGian ? thoiGian.substring(0, 22) : 'N/A';
 
             const isLocked = (trangThai === 'Đang hoạt động');
             
